@@ -1,9 +1,10 @@
 from enum import Enum
+import json
 
 class TankState(Enum):
     READY = 0
     BUSY = 1
-    INVIS = 2
+    DEAD = 2
 
 class Tank:
     def __init__(self, id, x, y, team):
@@ -16,7 +17,23 @@ class Tank:
         self.health = 100
         self.shielded = False
         self.state = TankState.READY
+        self.stateticker = 0
         self.speed = 10
+        self.type = ""
+        self.invis = False
+        self.abilitycooldown = 0
+    
+    def __str__(self):
+        return json.dumps({
+            "id":self.id,
+            "team":self.team,
+            "type":self.type,
+            "pos_x":self.x,
+            "pos_y":self.y,
+            "health":self.health,
+            "state":self.state,
+            "invis":self.invis
+        })
 
 class RepairTank(Tank):
     def __init__(self, id, x, y, team):
