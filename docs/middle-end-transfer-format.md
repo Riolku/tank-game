@@ -27,6 +27,16 @@ This document will detail the format in which data will be stored while it is be
 ]
 ```
 
+classes are:
+- repair
+- artillery
+- assassin
+- shield
+- kamikaze
+- scout
+- mortar
+- hack
+
 ## Hierarchy
 
 - file
