@@ -21,7 +21,11 @@ $(document).ready(() => {
       - tank rotations
       - tank state (affected by abilities)
       - temporary display affects and transparency
-      -
+      - barriers and HP values
+      - tank HP and cooldown
     */
+
+    var [map, players, classes, data_frames] = JSON.parse(t);
+    var render_frames = [];
   });
 })

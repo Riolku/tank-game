@@ -7,8 +7,17 @@ from flask import render_template, request
 from .auth import *
 
 
+def url_for_safe(*args, **kwargs):
+    try:
+        return url_for(*args, **kwargs)
+    except:
+        return ""
+
+
 def render(*args, **kwargs):
-    return render_template(*args, **kwargs, user=user)
+    return render_template(
+        *args, **kwargs, user=user, url_for_safe=url_for_safe
+    )
 
 
 @app.route("/")
