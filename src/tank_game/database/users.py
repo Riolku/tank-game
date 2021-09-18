@@ -1,4 +1,3 @@
-from tank_game import db
 from .aliases import *
 
 class Users(dbmodel):

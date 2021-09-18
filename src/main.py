@@ -1,7 +1,8 @@
 import sys
 
-from tank_game import app, db
+from tank_game import app
 import tank_game.server.main
+import tank_game.database
 
 if __name__ == "__main__":
     arguments = sys.argv[1:]
