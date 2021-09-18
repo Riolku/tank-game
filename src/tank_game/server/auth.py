@@ -2,9 +2,11 @@
 
 import jwt
 
+from flask import request
+
 from werkzeug.local import Local
 
-from main import app
+from tank_game import app
 
 user_manager = Local()
 user = user_manager("user")

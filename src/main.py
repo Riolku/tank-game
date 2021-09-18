@@ -1,6 +1,7 @@
 import sys
 
 import tank_game
+import tank_game.server.main
 
 if __name__ == "__main__":
     arguments = sys.argv[1:]

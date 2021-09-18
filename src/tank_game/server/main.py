@@ -4,7 +4,7 @@ import math, os, sys, time
 
 from flask import render_template, request
 
-from auth import *
+from .auth import *
 
 
 def render(*args, **kwargs):
