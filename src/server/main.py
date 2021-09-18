@@ -1,15 +1,37 @@
+# -*- coding: utf-8 -*-
+
 import sys
 
-from flask import Flask
+from flask import Flask, render_template, request
 from flask_cors import CORS
 
-app = Flask(__name__)
+from auth import *
+
+app = Flask(
+    __name__,
+    template_folder="../frontend/templates",
+    static_folder="../frontend/static",
+)
 CORS(app)
+
+
+def render(*args, **kwargs):
+    return render_template(*args, **{**kwargs, "user": user})
 
 
 @app.route("/")
 def serve_root():
-    return "Hello, World!", 200
+    return render("index.html"), 200
+
+
+@app.errorhandler(404)
+def not_found(e):
+    return render("404.html"), 404
+
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render("500.html"), 500
 
 
 if __name__ == "__main__":
@@ -31,4 +53,6 @@ if __name__ == "__main__":
                     )
             else:
                 raise SystemExit("There must be an argument after --port / -p")
+        else:
+            raise SystemExit(f"Unrecognized argument `{arg}`")
     app.run(host="0.0.0.0", port=port, debug=debug)

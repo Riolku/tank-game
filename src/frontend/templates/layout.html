@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Tank Game - Hack the North 2021" />
+    <meta name="keywords" content="Tank Game, Hack the North, Hack the North 2021, HTN, HTN2021, 2021" />
+    <meta name="author" content="Alexander Liao, Andrew Liao, Keenan Gugeler, Thomas Ingram" />
+    <meta name="viewport", content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="/static/css/global.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" integrity="sha512-UJfAaOlIRtdR+0P6C3KUoTDAxVTuy3lnSXLyLKlHYJlcSU8Juge/mjeaxDNMlw9LgeIotgz5FP8eUQPhX1q10A==" crossorigin="anonymous" />
+
+    {% block dependencies %} {% endblock %}
+
+    <title>{% block title %} {% endblock %}</title>
+  </head>
+  <body>
+    <header>
+      {% include 'navbar.html' %}
+
+      {% block header %}
+      {% endblock %}
+    </header>
+    <main>
+      {% block main %}
+      {% endblock %}
+    </main>
+    <footer class="page-footer">
+      <div class="container">
+        &copy;&nbsp;2021 Alexander Liao, Andrew Liao, Keenan Gugeler, Thomas Ingram
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400&family=Open+Sans:wght@400&display=swap');
+
+footer {
+  padding-bottom: 1.5em;
+}
+
+body {
+  font-family: "Exo 2", sans-serif;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+  padding: 0 10%;
+}
+
+p {
+  font-family: "Open Sans", sans-serif;
+}
+
+.bolded {
+  font-weight: bold;
+}
+
+.right {
+  float: right;
+}

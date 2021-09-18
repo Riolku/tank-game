@@ -1,0 +1,19 @@
+<div class="navbar-fixed">
+  <nav>
+    <div class="nav-wrapper">
+      <ul id="nav-mobile" class="">
+        {% for url, name in [["/", "Home"], ["/about", "About"]] %}
+        <li class="left"><a href="{{ url }}" class="{{ 'bolded' if request.endpoint and url_for(request.endpoint) == url else '' }}">{{ name }}</a></li>
+        {% endfor %}
+
+        {% if user %}
+        <li class="right"><a href="/profile">Profile</a></li>
+        <li class="right"><a href="/signout">Sign out</a></li>
+        {% else %}
+        <li class="right"><a href="/signup">Sign up</a></li>
+        <li class="right"><a href="/signin">Sign In</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+</div>
