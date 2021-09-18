@@ -17,7 +17,7 @@ This document will detail the format in which data will be stored while it is be
   [
     [
       [
-        ["x", "y", "HP", "shield", "firing angle (or -1)", "ability cooldown", "ability target (or -1, or 0 for self-cast, or x:y for coordinate cast)"],
+        ["x", "y", "HP", "shield", "firing angle (or -1)", "ability cooldown", "ability target (or -1, or 0 for self-cast, or [x, y] for coordinate cast)"],
         "..."
       ],
       ["..."],
