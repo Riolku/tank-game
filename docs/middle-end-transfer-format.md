@@ -32,7 +32,7 @@ classes are:
 - artillery - ability should self-inflict "empowered"
 - assassin - ability should self-inflict "speedy"
 - shield - ability should modify the shield value of allies
-- kamikaze
+- kamikaze - on the next turn, 0 should be submitted for this tank's update
 - scout - ability should self-inflict "invisible"
 - mortar
 - hack - ability should inflict "hacked"
