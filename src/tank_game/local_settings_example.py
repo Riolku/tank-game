@@ -6,4 +6,4 @@ DEBUG = True
 SECRET_KEY = 'This is insecure.'
 
 # Use postgresql in prod
-SQLALCHEMY_DATABASE_URI = "sqlite://../../app.sqlite"
+SQLALCHEMY_DATABASE_URI = "sqlite:///../../app.sqlite"
