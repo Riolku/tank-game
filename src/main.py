@@ -1,6 +1,6 @@
 import sys
 
-import tank_game
+from tank_game import app, db
 import tank_game.server.main
 
 if __name__ == "__main__":
@@ -24,4 +24,4 @@ if __name__ == "__main__":
                 raise SystemExit("There must be an argument after --port / -p")
         else:
             raise SystemExit(f"Unrecognized argument `{arg}`")
-    tank_game.app.run(host="0.0.0.0", port=port, debug=debug)
+    app.run(host="0.0.0.0", port=port, debug=debug)
