@@ -1,4 +1,3 @@
-from tank_game import db
 from .bots import Bots
 from .aliases import *
 
