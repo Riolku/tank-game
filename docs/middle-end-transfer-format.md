@@ -29,13 +29,13 @@ This document will detail the format in which data will be stored while it is be
 
 classes are:
 - repair
-- artillery
-- assassin
-- shield
+- artillery - ability should self-inflict "empowered"
+- assassin - ability should self-inflict "speedy"
+- shield - ability should modify the shield value of allies
 - kamikaze
-- scout
+- scout - ability should self-inflict "invisible"
 - mortar
-- hack
+- hack - ability should inflict "hacked"
 
 ## Hierarchy
 
