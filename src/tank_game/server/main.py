@@ -6,6 +6,7 @@ from flask import render_template, request
 
 from auth import *
 
+
 def render(*args, **kwargs):
     return render_template(*args, **kwargs, user=user)
 
@@ -40,7 +41,7 @@ def accept_submission():
 
 @app.route("/replay-viewer/<int:match>")
 def replay_viewer(match):
-    return render_template("replay-viewer.html", match=match), 200
+    return render("replay-viewer.html", match=match), 200
 
 
 @app.route("/match-data/<int:match>")
