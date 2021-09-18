@@ -2,23 +2,22 @@
 
 import math, os, sys, time
 
-from flask import Flask, render_template, request
-from flask_cors import CORS
+from flask import render_template, request
 
-from auth import *
+from .auth import *
 
-app = Flask(
-    __name__,
-    template_folder="../frontend/templates",
-    static_folder="../frontend/static",
-)
-CORS(app)
 
-app.config["MAX_CONTENT_LENGTH"] = 1024 * 1024
+def url_for_safe(*args, **kwargs):
+    try:
+        return url_for(*args, **kwargs)
+    except:
+        return ""
 
 
 def render(*args, **kwargs):
-    return render_template(*args, **kwargs, user=user)
+    return render_template(
+        *args, **kwargs, user=user, url_for_safe=url_for_safe
+    )
 
 
 @app.route("/")
@@ -51,7 +50,7 @@ def accept_submission():
 
 @app.route("/replay-viewer/<int:match>")
 def replay_viewer(match):
-    return render_template("replay-viewer.html", match=match), 200
+    return render("replay-viewer.html", match=match), 200
 
 
 @app.route("/match-data/<int:match>")
@@ -111,27 +110,3 @@ def not_found(e):
 @app.errorhandler(500)
 def internal_server_error(e):
     return render("500.html"), 500
-
-
-if __name__ == "__main__":
-    arguments = sys.argv[1:]
-    port = 5060
-    debug = False
-    while arguments:
-        arg = arguments.pop(0)
-        if arg == "-d" or arg == "--debug":
-            debug = True
-        elif arg == "-p" or arg == "--port":
-            if arguments:
-                rawport = arguments.pop(0)
-                if rawport.isdigit():
-                    port = int(rawport)
-                else:
-                    raise SystemExit(
-                        "Argument after --port / -p must be a positive integer."
-                    )
-            else:
-                raise SystemExit("There must be an argument after --port / -p")
-        else:
-            raise SystemExit(f"Unrecognized argument `{arg}`")
-    app.run(host="0.0.0.0", port=port, debug=debug)
