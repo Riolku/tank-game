@@ -2,20 +2,9 @@
 
 import math, os, sys, time
 
-from flask import Flask, render_template, request
-from flask_cors import CORS
+from flask import render_template, request
 
 from auth import *
-
-app = Flask(
-    __name__,
-    template_folder="../frontend/templates",
-    static_folder="../frontend/static",
-)
-CORS(app)
-
-app.config["MAX_CONTENT_LENGTH"] = 1024 * 1024
-
 
 def render(*args, **kwargs):
     return render_template(*args, **kwargs, user=user)
