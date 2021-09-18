@@ -27,6 +27,8 @@ This document will detail the format in which data will be stored while it is be
 ]
 ```
 
+When the scout tank stops being invisible (either due to timeout or firing) send `-2` as the ability target.
+
 ## Hierarchy
 
 - file
