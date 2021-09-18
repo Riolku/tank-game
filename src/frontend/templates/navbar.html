@@ -1,8 +1,8 @@
 <div class="navbar-fixed">
   <nav>
-    <div class="nav-wrapper">
+    <div class="nav-wrapper deep-purple">
       <ul id="nav-mobile" class="">
-        {% for url, name in [["/", "Home"], ["/about", "About"]] %}
+        {% for url, name in [["/", "Home"], ["/submit", "Submit"]] %}
         <li class="left"><a href="{{ url }}" class="{{ 'bolded' if request.endpoint and url_for(request.endpoint) == url else '' }}">{{ name }}</a></li>
         {% endfor %}
 
