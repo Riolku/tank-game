@@ -20,7 +20,8 @@ This document will detail the format in which data will be stored while it is be
         ["x", "y", "HP", "shield", "firing angle (or -1)", "ability cooldown (or -1 to currently use)"],
         "..."
       ],
-      ["..."]
+      ["..."],
+      ["barrier 1 HP (or -1)", "..."]
     ]
   ]
 ]
