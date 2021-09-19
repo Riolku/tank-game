@@ -68,8 +68,8 @@ def match_data(match):
     return json.dumps(
         [
             [
-                [[10, 0], [0, 10], [200, 300], [300, 200]],
-                [[10, 600], [0, 590], [200, 300], [300, 400]],
+                [[390, 10], [410, 10], [410, 110], [390, 110]],
+                [[390, 590], [410, 590], [410, 490], [390, 490]],
             ],
             ["hyper-neutrino", "riolku"],
             [
@@ -156,7 +156,87 @@ def match_data(match):
                         ],  # fire directly to the south
                     ],
                     [-1, 100],
-                ]
+                ],
+                [
+                    [
+                        [
+                            100,
+                            110,
+                            100,
+                            0,
+                            math.pi * 3 / 4,
+                            0,
+                            1,
+                            [],
+                        ],  # repair the artillery
+                        [
+                            100,
+                            200,
+                            100,
+                            0,
+                            0,
+                            0,
+                            -1,
+                            [],
+                        ],  # fire directly to the east
+                        [100, 300, 100, 0, -1, 0, 0, ["speedy"]],  # gain MS
+                        [100, 400, 100, 100, -1, 0, 0, []],  # shield around
+                        [
+                            100,
+                            500,
+                            100,
+                            0,
+                            math.pi / 2,
+                            0,
+                            -1,
+                            [],
+                        ],  # fire directly to the north
+                    ],
+                    [
+                        0,  # explode
+                        [
+                            700,
+                            200,
+                            100,
+                            0,
+                            -1,
+                            0,
+                            0,
+                            ["invisible"],
+                        ],  # go invisible
+                        [
+                            700,
+                            300,
+                            100,
+                            0,
+                            -1,
+                            0,
+                            -1,
+                            [],
+                        ],
+                        [
+                            700,
+                            400,
+                            100,
+                            0,
+                            math.pi,
+                            0,
+                            -1,
+                            [],
+                        ],  # fire directly to the west
+                        [
+                            700,
+                            500,
+                            100,
+                            0,
+                            math.pi * 3 / 2,
+                            0,
+                            -1,
+                            [],
+                        ],  # fire directly to the south
+                    ],
+                    [-1, 90],
+                ],
             ],
         ]
     )

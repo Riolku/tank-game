@@ -27,3 +27,12 @@ p {
 .right {
   float: right;
 }
+
+.no {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background-color: #0000 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+}

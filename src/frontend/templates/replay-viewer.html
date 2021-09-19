@@ -9,24 +9,24 @@
 
 <center>
   <br /><br />
-  <canvas id="canvas" width=800 height=600></canvas>
+  <canvas id="canvas" width=800 height=600 style="border: 1px solid black"></canvas>
   <div style="width: 800px">
     <span style="float: left">
-      <i class="material-icons">first_page</i>
-      <i class="material-icons">play_arrow</i>
-      <i class="material-icons">forward_5</i>
+      <button class="no"><i class="material-icons" onclick="restart();">first_page</i></button>
+      <button class="no"><i id="pb" class="material-icons" onclick="toggle();">play_arrow</i></button>
+      <button class="no"><i id="rp" class="material-icons" onclick="repeat();">repeat</i></button>
     </span>
     <span style="float: center">
-      <i class="material-icons">skip_previous</i>
+      <button class="no"><i class="material-icons" onclick="rewind();">skip_previous</i></button>
       <p class="range-field" style="width: 50%; display: inline-block; padding: 0; margin: 0">
-        <input id="timeline" style="padding: 0; margin: 0" type="range" min="1" max="{{ frames + 30 }}" value="1" />
+        <input id="timeline" style="padding: 0; margin: 0" type="range" min="0" max="{{ frames + 30 }}" value="0" oninput="checkbar();" />
       </p>
-      <i class="material-icons">skip_next</i>
+      <button class="no"><i class="material-icons" onclick="forward();">skip_next</i></button>
     </span>
     <span style="float: right">
-      <i class="material-icons">fast_rewind</i>
-      <span id="speed" style="padding: 0; margin: 0; display: inline-block; vertical-align: top">1.0x</span>
-      <i class="material-icons">fast_forward</i>
+      <button class="no"><i class="material-icons" onclick="speed(-0.1);">fast_rewind</i></button>
+      <span id="speed" style="padding: 0; margin: 0; display: inline-block; vertical-align: top; font-family: monospace">1.0x</span>
+      <button class="no"><i class="material-icons" onclick="speed(0.1);">fast_forward</i></button>
     </span>
   </div>
 </center>

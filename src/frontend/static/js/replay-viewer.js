@@ -2,6 +2,27 @@ var map, players, classes, data_frames;
 
 var render_frames = [];
 var cframe = 0;
+var playing = 0;
+var repeating = false;
+
+var speed_mul = 1;
+
+function run() {
+  if (cframe < render_frames.length - 1) {
+    cframe += playing;
+  } else if (playing) {
+    if (repeating) {
+      cframe = 0;
+    } else {
+      playing = 0;
+      $("#pb").html("play_arrow");
+    }
+  }
+  $("#timeline").val(cframe);
+  setTimeout(run, 1000 / 60 / speed_mul);
+}
+
+run();
 
 var canvas, ctx;
 
@@ -18,20 +39,28 @@ var classmap = {
   "hack": "hack_the_north"
 };
 
-function drawImage(ctx, path, scale, x, y, angle) {
+function drawImage(ctx, path, scale, x, y, angle, alpha, gray) {
+  if (alpha === 0) return;
+  alpha = alpha || 1;
+  gray = gray || false;
   var image = document.createElement("img");
   image.src = path;
+  var width = image.width * scale;
+  var height = image.height * scale;
   ctx.save();
   ctx.translate(x, y);
-  ctx.rotate(angle);
-  ctx.drawImage(image, -width * scale / 2, -height * scale / 2);
+  ctx.rotate(angle + Math.PI / 2);
+  ctx.globalAlpha = alpha;
+  if (gray) ctx.filter = "grayscale(1)";
+  ctx.drawImage(image, -width / 2, -height / 2, width, height);
   ctx.restore();
 }
 
 function render() {
+  // each render frame is [tanks, explosions, targets, shots, barriers]
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // render barriers
   for (var x in map) {
-    // each render frame is [tanks, explosions, targets, shots, barriers]
     var barrier = map[x];
     var hp = render_frames[cframe][4][x];
     ctx.fillStyle = hp == -1 ? "#000" : "#333";
@@ -48,23 +77,27 @@ function render() {
     sy /= t;
     ctx.closePath();
     ctx.fill();
+    // render barrier HP bars
     if (hp != -1) {
       ctx.fillStyle = "#3a3";
       ctx.beginPath();
-      ctx.moveTo(sx - 75, sy - 5);
-      ctx.lineTo(sx + 75, sy - 5);
-      ctx.lineTo(sx + 75, sy + 5);
-      ctx.lineTo(sx - 75, sy + 5);
+      ctx.moveTo(sx - 75, sy - 25);
+      ctx.lineTo(sx - 75 + 150 * hp / bmhp[x], sy - 25);
+      ctx.lineTo(sx - 75 + 150 * hp / bmhp[x], sy - 15);
+      ctx.lineTo(sx - 75, sy - 15);
       ctx.closePath();
       ctx.fill();
     }
   }
+  // render tanks
   for (var t of [0, 1]) {
     for (var tank of render_frames[cframe][0][t]) {
       var team = ["blue", "red"][t];
       var classid = classmap[tank.class];
-      drawImage(ctx, "static/images/" + team + "_tank.png", 0.25, tank.x, tank.y, tank.angle);
-      drawImage(ctx, "/static/images/" + team + "_" + classid + "_turret.png", 0.25, tank.x, tank.y, tank.barrel);
+      var scale = 0.15;
+      var alpha = tank.dead == -1 ? tank.invisible ? 0.6 : 1 : tank.dead / 30;
+      drawImage(ctx, "/static/images/" + team + "_tank.png", scale, tank.x, tank.y, tank.angle, alpha, tank.dead != -1);
+      drawImage(ctx, "/static/images/" + team + "_" + classid + "_turret.png", scale, tank.x, tank.y, tank.barrel, alpha, tank.dead != -1);
     }
   }
   requestAnimationFrame(render);
@@ -135,12 +168,13 @@ $(document).ready(() => {
     for (var frame = 0; frame < data_frames.length + 30; frame++) {
       if (frame < data_frames.length) {
         for (var i of [0, 1]) {
+          var remove = [];
           for (var j in data_frames[frame][i]) {
             var state = tanks[i][indices[i][j]];
             var mod = data_frames[frame][i][j];
             if (mod === 0) {
               state.dead = 30;
-              indices[i].splice(j, 1);
+              remove.push(j);
             } else {
               var [x, y, hp, shield, fire, cd, ability, statuses] = mod;
               if (state.x == -1 && state.y == -1) {
@@ -175,27 +209,64 @@ $(document).ready(() => {
           }
           if (frame === 0) bmhp = data_frames[frame][2];
         }
-        render_frames.push(JSON.parse(JSON.stringify([tanks, explosions, targets, shots, barriers = data_frames[frame][2]])));
-        for (var i of [0, 1]) {
-          for (var tank of tanks[i]) {
-            if (tank.dead > 0) tank.dead--;
-            if (tank.healed > 0) tank.healed--;
-          }
-          for (var q of [explosions, targets, shots]) {
-            for (var j = 0; j < q.length; j++) {
-              if (q[j][0] > 0) q[j][0]--;
-              else {
-                q.splice(j, 1);
-                j--;
-              }
+        for (var x of remove.reverse()) indices[i].splice(x, 1);
+        barriers = data_frames[frame][2];
+      }
+      render_frames.push(JSON.parse(JSON.stringify([tanks, explosions, targets, shots, barriers])));
+      for (var i of [0, 1]) {
+        for (var tank of tanks[i]) {
+          if (tank.dead > 0) tank.dead--;
+          if (tank.healed > 0) tank.healed--;
+        }
+        for (var q of [explosions, targets, shots]) {
+          for (var j = 0; j < q.length; j++) {
+            if (q[j][0] > 0) q[j][0]--;
+            else {
+              q.splice(j, 1);
+              j--;
             }
           }
         }
-      } else {
-        render_frames.push(JSON.parse(JSON.stringify([tanks, explosions, targets, shots, barriers])));
       }
     }
-
     render();
   });
 });
+
+function restart() {
+  cframe = 0;
+}
+
+function toggle() {
+  if (!playing && cframe == render_frames.length - 1) cframe = 0;
+  $("#pb").html(playing ? "play_arrow" : "pause");
+  playing ^= 1;
+}
+
+function jump() {
+  cframe += 10;
+}
+
+function rewind() {
+  if (cframe > 0) cframe--;
+}
+
+function forward() {
+  if (cframe < render_frames.length - 1) cframe++;
+}
+
+function checkbar() {
+  cframe = parseInt($("#timeline").val());
+}
+
+function speed(x) {
+  if (speed_mul + x > 0.2 && speed_mul + x <= 3) {
+    speed_mul += x;
+    $("#speed").html(Math.floor(speed_mul) + "." + Math.floor((speed_mul % 1) * 10) + "x");
+  }
+}
+
+function repeat() {
+  $("#rp").css("color", repeating ? "black" : "#0c0");
+  repeating ^= true;
+}
