@@ -18,6 +18,9 @@ ASS_BUFF = 5
 ASS_CD = 5
 ASS_DUR = 3
 
+SHLD_CD = 10
+SHLD_DUR = 5
+
 KAMI_DMG = 50
 KAMI_RAD = 5
 
@@ -121,7 +124,7 @@ class Tank:
 
     def shield(self):
         self.shielded = True
-        self.shielddur = 10
+        self.shielddur = SHLD_DUR
 
     def ability_cooldown(self, length):
         self.abilitycd = length
@@ -206,6 +209,7 @@ class ShieldTank(Tank):
     def ability(self, team_tanks, enemy_tanks, data):#data:id
         events = []
         if(super().ability(team_tanks, enemy_tanks, data)):
+            self.ability_cooldown(SHLD_CD)
             events = [[data, self.team, Status.SHIELD, 0]]
         return events
 
