@@ -31,24 +31,20 @@ def serve_submit_page():
     if not user:
         return redirect("/"), 303
     else:
-        return render("submit.html"), 200
-
+        return render("submit.html", code = user.code), 200
 
 
 @app.route("/submit", methods=["POST"])
 def accept_submission():
-    code = request.form["code"]
-    
-    u = Users.query.filter_by(id=user.id).first()
     if request.form.get("switch") == "on":
         file = request.files["file"]
         code = file.read()
     else:
         code = request.form["code"]
-    u.code = code
+    user.code = code
     db.session.commit()
     flash("Code submitted!", category="SUCCESS")
-    return render("submit.html"), 200
+    return render("submit.html", code = code), 200
 
 
 @app.route("/signin", methods=["GET"])
