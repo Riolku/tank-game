@@ -87,7 +87,8 @@ def handle_signup_request():
         return render("signup.html"), 200
     else:
         user = Users(
-            username=username, password=argon2.argon2_hash(password, username + "abcdefgh")
+            username=username,
+            password=argon2.argon2_hash(password, username + "abcdefgh"),
         )
         db.session.add(user)
         db.session.commit()
