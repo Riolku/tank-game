@@ -29,6 +29,14 @@ def serve_root():
 def serve_submit_page():
     return render("submit.html"), 200
 
+@app.route("/signin", methods=["GET"])
+def serve_signin_page():
+    return render("signin.html"), 200
+
+@app.route("/signup", methods=["GET"])
+def serve_signup_page():
+    return render("signup.html"), 200
+
 
 @app.route("/submit", methods=["POST"])
 def accept_submission():
