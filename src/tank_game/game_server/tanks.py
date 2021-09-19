@@ -113,6 +113,7 @@ class Tank:
 
     def heal(self, amount):
         self.health += amount
+        self.health = min(self.health, 100)
 
     def stun(self, amount):
         self.state = TankState.BUSY
@@ -165,7 +166,7 @@ class ArtilleryTank(Tank):
         self.type = "artillery"
 
     def ability(self, team_tanks, enemy_tanks, data): #data:NONE/self id
-        if(super().ability(team_tanks, enemy_tanks, data)):
+        if(super().ability(team_tanks, enemy_tanks, data)) and not self.empowered:
             self.empowered = True
             self.attack += ART_BUFF
             self.ability_cooldown(ART_CD)
@@ -174,8 +175,9 @@ class ArtilleryTank(Tank):
         return []
 
     def cancel_ability(self):
-        self.empowered = False
-        self.attack -= ART_BUFF
+        if self.empowered:
+            self.empowered = False
+            self.attack -= ART_BUFF
 
 class AssassinTank(Tank):
     def __init__(self, id, x, y, team):
