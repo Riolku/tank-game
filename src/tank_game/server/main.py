@@ -175,7 +175,7 @@ def match_data(mid):
         .all()
     )
 
-    def format_frame_for_team(tanks, f):
+    def format_frame_for_team(tanks, enemy, f):
         ret = []
 
         for t in tanks:
@@ -184,15 +184,44 @@ def match_data(mid):
                 FrameUpdates.query.with_parent(f).filter_by(mtid=t.id).all()
             )
 
+            angle = -1
+            ability = -1
+
+            for update in updates:
+                if update.action == "FIRE":
+                    target = enemy[int(update.data)]
+                    target_frame = (
+                        TankFrame.query.with_parent(f)
+                        .filter_by(mtid=target.id)
+                        .first()
+                    )
+                    angle = math.atan2(
+                        target_frame.pos_y - tf.pos_y,
+                        target_frame.pos_x - tf.pos_x,
+                    )
+                elif update.action == "ABILITY":
+                    if tf.tank.type in [
+                        "artillery",
+                        "assassin",
+                        "shield",
+                        "kamikaze",
+                        "scout",
+                    ]:
+                        ability = 0
+                    elif tf.tank.type == "mortar":
+                        ability = json.loads(update.data)
+                    elif tf.tank.type in ["repair", "hack"]:
+                        ability = int(update.data)
+
             ret.append(
                 [
                     tf.pos_x,
                     tf.pos_y,
                     tf.health,
-                    tf.shielded,
-                    -1,
+                    angle,
                     tf.ability_cd,
-                    [],
+                    ability,
+                    [y for x, y in [(tf.shielded, "shielded")] if x],
                 ]
             )
 
@@ -208,8 +237,8 @@ def match_data(mid):
             ],
             [
                 [
-                    format_frame_for_team(red_tanks, f),
-                    format_frame_for_team(blue_tanks, f),
+                    format_frame_for_team(red_tanks, blue_tanks, f),
+                    format_frame_for_team(blue_tanks, red_tanks, f),
                 ]
                 for f in match_frames
             ],

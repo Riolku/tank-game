@@ -203,7 +203,7 @@ $(document).ready(() => {
               state.dead = 30;
               remove.push(j);
             } else {
-              var [x, y, hp, shield, fire, cd, ability, statuses] = mod;
+              var [x, y, hp, fire, cd, ability, statuses] = mod;
               if (state.x == -1 && state.y == -1) {
                 state.x = x;
                 state.y = y;
@@ -232,10 +232,8 @@ $(document).ready(() => {
                   explosions.push([60, tx, ty]);
                 }
               }
-              statuses.forEach(status => {
-                if (status[0] == "~") state[status.substring(1)] = false;
-                else state[status] = true;
-              });
+              for (var x of ["shielded", "empowered", "speedy", "invisible", "hacked"]) state[x] = false;
+              statuses.forEach(status => state[status] = true);
             }
           }
           if (frame === 0) bmhp = data_frames[frame][2];
