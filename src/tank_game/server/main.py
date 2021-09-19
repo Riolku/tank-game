@@ -149,14 +149,14 @@ def challenge(id):
             return render("challenge.html", match=0, target=u), 200
 
 
-@app.route("/replay-viewer/<int:match>")
-def replay_viewer(match):
-    match = Match.query.filter_by(id=match).first_or_404()
+@app.route("/replay-viewer/<int:mid>")
+def replay_viewer(mid):
+    match = Match.query.filter_by(id=mid).first_or_404()
     return (
         render(
             "replay-viewer.html",
             match=match,
-            frames=MatchFrame.query.filter_by(mid=match).count(),
+            frames=MatchFrame.query.filter_by(mid=mid).count(),
         ),
         200,
     )
