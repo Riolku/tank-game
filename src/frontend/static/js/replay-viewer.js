@@ -215,7 +215,7 @@ $(document).ready(() => {
               }
               state.hp = hp;
               if (frame === 0) tmhp[i][j] = hp;
-              state.shield = shield;
+              state.shield = false;
               if (fire != -1) {
                 shots.push([5, x, y, fire]);
                 state.barrel = fire;

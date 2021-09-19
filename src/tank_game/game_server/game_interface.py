@@ -76,9 +76,11 @@ class GameInterface:
                 mtid = mt.id,
                 pos_x = tank['pos_x'],
                 pos_y = tank['pos_y'],
-                health = tank['health'],
+                health = max(tank['health'], 0),
                 state = tank['state'],
                 invis = tank['invis'],
+                speedy = tank['speedy'],
+                empowered = tank['empowered'],
                 ability_cd = tank['ability_cd'],
                 speed = tank['speed'],
                 shielded = tank['shielded']
