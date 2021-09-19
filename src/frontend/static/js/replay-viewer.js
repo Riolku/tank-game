@@ -89,6 +89,10 @@ function render() {
       ctx.fill();
     }
   }
+  // render targeting reticles
+  for (var t of render_frames[cframe][2]) {
+    drawImage(ctx, "/static/images/mortar_target_icon.png", 0.2, t[1], t[2], 0, t[0] / 40, false);
+  }
   // render tanks
   for (var t of [0, 1]) {
     for (var tank of render_frames[cframe][0][t]) {

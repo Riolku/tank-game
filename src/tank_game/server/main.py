@@ -132,7 +132,7 @@ def match_data(match):
                             -1,
                             0,
                             [500, 300],
-                            [],
+                            ["hacked"],
                         ],  # throw bomb at center
                         [
                             700,
