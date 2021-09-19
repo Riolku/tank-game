@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import math, os, sys, time
+import json, math, os, sys, time
 
 from flask import render_template, request
 
@@ -50,56 +50,108 @@ def accept_submission():
 
 @app.route("/replay-viewer/<int:match>")
 def replay_viewer(match):
-    return render("replay-viewer.html", match=match), 200
+    # TODO get actual match data
+    return render("replay-viewer.html", match=match, frames=1), 200
 
 
 @app.route("/match-data/<int:match>")
 def match_data(match):
     # TODO get actual match data
-    return [
-        [
-            [[10, 0], [0, 10], [200, 300], [300, 200]],
-            [[10, 600], [0, 590], [200, 300], [300, 400]],
-        ],
-        ["hyper-neutrino", "riolku"],
-        [
-            ["repair", "artillery", "assassin", "shield", "shield"],
-            ["kamikaze", "scout", "mortar", "hack", "shield"],
-        ],
+    return json.dumps(
         [
             [
-                [100, 100, 100, 0, -1, 0, 1],  # repair the artillery
-                [100, 200, 100, 0, 0, 0, -1],  # fire directly to the east
-                [100, 300, 100, 0, -1, 0, 0],  # gain MS
-                [100, 400, 100, 0, -1, 0, 0],  # shield around
-                [
-                    100,
-                    500,
-                    100,
-                    0,
-                    math.pi / 2,
-                    0,
-                    -1,
-                ],  # fire directly to the north
+                [[10, 0], [0, 10], [200, 300], [300, 200]],
+                [[10, 600], [0, 590], [200, 300], [300, 400]],
+            ],
+            ["hyper-neutrino", "riolku"],
+            [
+                ["repair", "artillery", "assassin", "shield", "shield"],
+                ["kamikaze", "scout", "mortar", "hack", "shield"],
             ],
             [
-                [700, 100, 100, 0, -1, 0, 0],  # explode
-                [700, 200, 100, 0, -1, 0, 0],  # go invisible
-                [700, 300, 100, 0, -1, 0, [500, 300]],  # throw bomb at center
-                [700, 400, 100, 0, math.pi, 0, -1],  # fire directly to the west
                 [
-                    700,
-                    500,
-                    100,
-                    0,
-                    math.pi * 3 / 2,
-                    0,
-                    -1,
-                ],  # fire directly to the south
+                    [
+                        [
+                            100,
+                            100,
+                            100,
+                            0,
+                            -1,
+                            0,
+                            1,
+                            [],
+                        ],  # repair the artillery
+                        [
+                            100,
+                            200,
+                            100,
+                            0,
+                            0,
+                            0,
+                            -1,
+                            [],
+                        ],  # fire directly to the east
+                        [100, 300, 100, 0, -1, 0, 0, ["speedy"]],  # gain MS
+                        [100, 400, 100, 100, -1, 0, 0, []],  # shield around
+                        [
+                            100,
+                            500,
+                            100,
+                            0,
+                            math.pi / 2,
+                            0,
+                            -1,
+                            [],
+                        ],  # fire directly to the north
+                    ],
+                    [
+                        [700, 100, 100, 0, -1, 0, 0, []],  # explode
+                        [
+                            700,
+                            200,
+                            100,
+                            0,
+                            -1,
+                            0,
+                            0,
+                            ["invisible"],
+                        ],  # go invisible
+                        [
+                            700,
+                            300,
+                            100,
+                            0,
+                            -1,
+                            0,
+                            [500, 300],
+                            [],
+                        ],  # throw bomb at center
+                        [
+                            700,
+                            400,
+                            100,
+                            0,
+                            math.pi,
+                            0,
+                            -1,
+                            [],
+                        ],  # fire directly to the west
+                        [
+                            700,
+                            500,
+                            100,
+                            0,
+                            math.pi * 3 / 2,
+                            0,
+                            -1,
+                            [],
+                        ],  # fire directly to the south
+                    ],
+                    [-1, 100],
+                ]
             ],
-            [-1, 100],
-        ],
-    ]
+        ]
+    )
 
 
 @app.errorhandler(404)
