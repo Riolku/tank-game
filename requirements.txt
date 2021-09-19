@@ -1,0 +1,7 @@
+argon2
+celery
+dmoj
+Flask
+Flask-Cors
+Flask-Sqlalchemy
+PyJWT
