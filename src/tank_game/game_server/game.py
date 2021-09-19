@@ -2,38 +2,32 @@ from enum import Enum
 from tank_game.game_server import tanks
 import json
 
-class Team(Enum):
-    BLUE = 0
-    RED = 1
-
 class Game:
     def __init__(self):
         self.red_tanks = []
         self.blue_tanks = []
 
-        self.terrain = []
-        """[
-            [["x1", "y1"], ["x2", "y2"], ["x3", "y3"], ["x4", "y4"]]
-        ],"""
+    def is_done(self):
+        return all(t.is_dead() for t in self.red_tanks) or all(t.is_dead() for t in self.blue_tanks)
 
     def get_state(self):
         out = {}
 
         out_tanks = []
         for tank in self.red_tanks:
-            out_tanks.append(str(tank))
+            out_tanks.append(tank.get_json())
         for tank in self.blue_tanks:
-            out_tanks.append(str(tank))
+            out_tanks.append(tank.get_json())
         out["tanks"] = out_tanks
 
         return out
 
     def start_game(self, red_comp, blue_comp):
         for t in range(len(red_comp)):
-            self.red_tanks.append(tanks.Tanks[red_comp[t]](t, 0, 0, Team.RED))
+            self.red_tanks.append(tanks.Tanks[red_comp[t]](t, 0, 0, "RED"))
 
         for t in range(len(blue_comp)):
-            self.blue_tanks.append(tanks.Tanks[blue_comp[t]](t, 0, 0 , Team.BLUE))
+            self.blue_tanks.append(tanks.Tanks[blue_comp[t]](t, 0, 0 , "BLUE"))
 
     def doframe(self, updates):
         ability = []
@@ -166,7 +160,7 @@ class Game:
         frame_info = self.get_state()
         frame_info["updates"] = updates
 
-        return json.dumps(frame_info)
+        return frame_info
 
 """
 {

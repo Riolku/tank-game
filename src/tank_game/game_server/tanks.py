@@ -27,12 +27,12 @@ SCT_CD = 5
 HTN_DUR=5
 HTN_CD=7
 
-class TankState(Enum):
+class TankState:
     READY = 0
     BUSY = 1
     DEAD = 2
 
-class Status(Enum):
+class Status:
     HEAL=0
     DAMAGE=1
     STUN=2
@@ -64,8 +64,8 @@ class Tank:
 
         self.attack = 20
 
-    def __str__(self):
-        return json.dumps({
+    def get_json(self):
+        return {
             "id":self.id,
             "team":self.team,
             "type":self.type,
@@ -77,7 +77,7 @@ class Tank:
             "ability_cd":self.abilitycd,
             "speed":self.speed,
             "shielded":self.shielded
-        })
+        }
 
 
     def update(self):
@@ -134,6 +134,9 @@ class Tank:
 
     def invis(self):
         self.invis = True
+
+    def is_dead(self):
+        return self.state == TankState.DEAD
 
 class RepairTank(Tank):
     def __init__(self, id, x, y, team):

@@ -12,27 +12,33 @@ class GameInterface:
         match = Match.query.filter_by(id = self.id).first()
         self.fn = 0
 
-        self.communicator = Communicator(match.red_user.code, match.blue_user.code)
-        self.communicator.start()
+        try:
+            self.communicator = Communicator(match.red_user.code, match.blue_user.code)
+            self.communicator.start()
 
-        self.game_engine = Game()
-        self.game_engine.start_game(*self.communicator.recv_info())
+            self.game_engine = Game()
+            red_team, blue_team = self.communicator.recv_info()
+            self.game_engine.start_game(red_team, blue_team)
+            self.init_teams(red_team, blue_team)
 
-        self.current_frame = self.game_engine.doframe([])
-        self.serialize()
-
-        while not self.game_engine.is_done():
-            self.tick()
+            self.current_frame = self.game_engine.doframe([])
             self.serialize()
 
+            while not self.game_engine.is_done():
+                self.tick()
+                self.serialize()
+
+        finally:
+            self.communicator.kill()
+
     def init_teams(self, red_team, blue_team):
-        for colour, team in dict(red = red_team, blue = blue_team).items():
+        for colour, team in dict(RED = red_team, BLUE = blue_team).items():
             for num, tank in enumerate(team):
                 db.session.add(MatchTanks(
                     mid = self.id,
                     type = tank,
                     colour = colour,
-                    number = num + 1
+                    number = num
                 ))
 
         db.session.commit()
@@ -54,9 +60,13 @@ class GameInterface:
         mf = MatchFrame(mid = self.id, frame_no = self.fn)
         db.session.add(mf)
 
-        for tank in frame['tanks']:
+        print(self.current_frame)
+
+        for tank in self.current_frame['tanks']:
             id = tank['id']
             team = tank['team']
+
+            print(tank)
 
             mt = MatchTanks.query.filter_by(mid = self.id, colour = tank['team'], number = tank['id']).first()
             db.session.add(mt)
@@ -71,10 +81,10 @@ class GameInterface:
                 invis = tank['invis'],
                 ability_cd = tank['ability_cd'],
                 speed = tank['speed'],
-                shileded = tank['shielded']
+                shielded = tank['shielded']
             ))
 
-        for update in frame['updates']:
+        for update in self.current_frame['updates']:
             id = update['id']
             team = update['team']
 
