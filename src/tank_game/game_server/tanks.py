@@ -96,6 +96,7 @@ class Tank:
             self.abilitydur-=1
         elif(self.abilitydur == 0):
             self.cancel_ability()
+            self.abilitydur = -1
 
         if(self.shielddur == 1):
             self.shielded = False
