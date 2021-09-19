@@ -24,13 +24,15 @@ class GameInterface:
             self.current_frame = self.game_engine.doframe([])
             self.serialize()
 
-            while not self.game_engine.is_done() and self.fn <= 120:
+            while not self.game_engine.is_done() and self.fn <= 300:
                 self.tick()
                 self.serialize()
 
             db.session.commit()
 
         finally:
+            db.session.rollback()
+
             self.communicator.kill()
 
     def init_teams(self, red_team, blue_team):
@@ -43,9 +45,9 @@ class GameInterface:
                     number = num
                 ))
 
-    def tick(self):
-        print(self.fn)
+        db.session.commit()
 
+    def tick(self):
         self.current_frame = self.game_engine.doframe(self.get_updates())
         self.fn += 1
 

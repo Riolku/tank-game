@@ -50,4 +50,7 @@ class Submission:
         self._proc.stdin.flush()
 
     def recv(self) -> JSON_Object:
-        return json.loads(utf8text(self._proc.stdout.readline()))
+        dt = utf8text(self._proc.stdout.readline())
+
+        print(dt)
+        return json.loads(dt)
