@@ -2,10 +2,12 @@
 
 import argon2, json, math, os, sys, time
 
+from sqlalchemy.orm import joinedload
+
 from flask import flash, redirect, render_template, request
 
 from .auth import *
-from ..database import *
+from ..database import Match, MatchFrame, TankFrame, MatchTanks, FrameUpdates, Users, db
 
 
 def url_for_safe(*args, **kwargs):
@@ -31,11 +33,15 @@ def serve_submit_page():
     if not user:
         return redirect("/"), 303
     else:
-        return render("submit.html", code=user.code or ""), 200
+        return render("submit.html", code = user.code or ""), 200
 
 
 @app.route("/submit", methods=["POST"])
 def accept_submission():
+    if not user:
+        flash("You are not logged in.", category="ERROR")
+        return redirect("/"), 303
+
     if request.form.get("switch") == "on":
         file = request.files["file"]
         code = file.read()
@@ -146,184 +152,220 @@ def replay_viewer(match):
     )
 
 
-@app.route("/match-data/<int:match>")
-def match_data(match):
-    # TODO get actual match data
-    return json.dumps(
+@app.route("/match-data/<int:mid>")
+def match_data(mid):
+    match = Match.query.filter_by(id = mid).first()
+    red_tanks = MatchTanks.query.filter_by(mid = match.id, colour = "RED").all()
+    blue_tanks = MatchTanks.query.filter_by(mid = match.id, colour = "BLUE").all()
+
+    match_frames = MatchFrame.query.filter_by(mid = mid).order_by(MatchFrame.frame_no).options(joinedload('tank_frames'), joinedload('frame_updates')).all()
+
+    def format_frames_for_team(tanks, frames):
+        ret = []
+
+        for f in frames:
+            for t in tanks:
+                tf = TankFrame.query.with_parent(f).filter_by(mtid = t.id).first()
+                updates = FrameUpdates.query.with_parent(f).filter_by(mtid = t.id).all()
+
+                ret.append([
+                    tf.pos_x,
+                    tf.pos_y,
+                    tf.health,
+                    tf.shielded,
+                    -1,
+                    tf.ability_cd,
+                    []
+                ])
+
+        return ret
+
+    return json.dumps([
+        [],
+        [ match.red_user.username, match.blue_user.username ],
         [
-            [
-                [[390, 10], [410, 10], [410, 110], [390, 110]],
-                [[390, 590], [410, 590], [410, 490], [390, 490]],
-            ],
-            ["hyper-neutrino", "riolku"],
-            [
-                ["repair", "artillery", "assassin", "shield", "shield"],
-                ["kamikaze", "scout", "mortar", "hack", "shield"],
-            ],
-            [
-                [
-                    [
-                        [
-                            100,
-                            100,
-                            100,
-                            0,
-                            -1,
-                            0,
-                            1,
-                            [],
-                        ],  # repair the artillery
-                        [
-                            100,
-                            200,
-                            100,
-                            0,
-                            0,
-                            0,
-                            -1,
-                            [],
-                        ],  # fire directly to the east
-                        [100, 300, 100, 0, -1, 0, 0, ["speedy"]],  # gain MS
-                        [100, 400, 100, 100, -1, 0, 0, []],  # shield around
-                        [
-                            100,
-                            500,
-                            100,
-                            0,
-                            math.pi / 2,
-                            0,
-                            -1,
-                            [],
-                        ],  # fire directly to the north
-                    ],
-                    [
-                        [700, 100, 100, 0, -1, 0, 0, []],  # explode
-                        [
-                            700,
-                            200,
-                            100,
-                            0,
-                            -1,
-                            0,
-                            0,
-                            ["invisible"],
-                        ],  # go invisible
-                        [
-                            700,
-                            300,
-                            100,
-                            0,
-                            -1,
-                            0,
-                            [500, 300],
-                            ["hacked"],
-                        ],  # throw bomb at center
-                        [
-                            700,
-                            400,
-                            100,
-                            0,
-                            math.pi,
-                            0,
-                            -1,
-                            [],
-                        ],  # fire directly to the west
-                        [
-                            700,
-                            500,
-                            100,
-                            0,
-                            math.pi * 3 / 2,
-                            0,
-                            -1,
-                            [],
-                        ],  # fire directly to the south
-                    ],
-                    [-1, 100],
-                ],
-                [
-                    [
-                        [
-                            100,
-                            110,
-                            100,
-                            0,
-                            math.pi * 3 / 4,
-                            0,
-                            1,
-                            [],
-                        ],  # repair the artillery
-                        [
-                            100,
-                            200,
-                            100,
-                            0,
-                            0,
-                            0,
-                            -1,
-                            ["empowered"],
-                        ],  # fire directly to the east
-                        [100, 300, 100, 0, -1, 0, 0, ["speedy"]],  # gain MS
-                        [100, 400, 100, 100, -1, 0, 0, []],  # shield around
-                        [
-                            100,
-                            500,
-                            100,
-                            0,
-                            math.pi / 2,
-                            0,
-                            -1,
-                            [],
-                        ],  # fire directly to the north
-                    ],
-                    [
-                        0,  # explode
-                        [
-                            700,
-                            200,
-                            100,
-                            0,
-                            -1,
-                            0,
-                            0,
-                            ["invisible"],
-                        ],  # go invisible
-                        [
-                            700,
-                            300,
-                            100,
-                            0,
-                            -1,
-                            0,
-                            -1,
-                            [],
-                        ],
-                        [
-                            700,
-                            400,
-                            100,
-                            0,
-                            math.pi,
-                            0,
-                            -1,
-                            [],
-                        ],  # fire directly to the west
-                        [
-                            700,
-                            500,
-                            100,
-                            0,
-                            math.pi * 3 / 2,
-                            0,
-                            -1,
-                            [],
-                        ],  # fire directly to the south
-                    ],
-                    [-1, 90],
-                ],
-            ],
+            [ rt.type for rt in red_tanks ],
+            [ bt.type for bt in blue_tanks ],
+        ],
+        [
+            format_frames_for_team(red_tanks, match_frames),
+            format_frames_for_team(blue_tanks, match_frames)
         ]
-    )
+    ])
+
+    # TODO get actual match data
+    # return json.dumps(
+    #     [
+    #         [],
+    #         [ match.red_user.username, match.blue_user.username ],
+    #         [
+    #             [ rt.type for rt in red_tanks ],
+    #             [ bt.type for bt in blue_tanks ],
+    #         ],
+    #         [
+    #             [
+    #                 [
+    #                     [
+    #                         100,
+    #                         100,
+    #                         100,
+    #                         0,
+    #                         -1,
+    #                         0,
+    #                         1,
+    #                         [],
+    #                     ],  # repair the artillery
+    #                     [
+    #                         100,
+    #                         200,
+    #                         100,
+    #                         0,
+    #                         0,
+    #                         0,
+    #                         -1,
+    #                         [],
+    #                     ],  # fire directly to the east
+    #                     [100, 300, 100, 0, -1, 0, 0, ["speedy"]],  # gain MS
+    #                     [100, 400, 100, 100, -1, 0, 0, []],  # shield around
+    #                     [
+    #                         100,
+    #                         500,
+    #                         100,
+    #                         0,
+    #                         math.pi / 2,
+    #                         0,
+    #                         -1,
+    #                         [],
+    #                     ],  # fire directly to the north
+    #                 ],
+    #                 [
+    #                     [700, 100, 100, 0, -1, 0, 0, []],  # explode
+    #                     [
+    #                         700,
+    #                         200,
+    #                         100,
+    #                         0,
+    #                         -1,
+    #                         0,
+    #                         0,
+    #                         ["invisible"],
+    #                     ],  # go invisible
+    #                     [
+    #                         700,
+    #                         300,
+    #                         100,
+    #                         0,
+    #                         -1,
+    #                         0,
+    #                         [500, 300],
+    #                         ["hacked"],
+    #                     ],  # throw bomb at center
+    #                     [
+    #                         700,
+    #                         400,
+    #                         100,
+    #                         0,
+    #                         math.pi,
+    #                         0,
+    #                         -1,
+    #                         [],
+    #                     ],  # fire directly to the west
+    #                     [
+    #                         700,
+    #                         500,
+    #                         100,
+    #                         0,
+    #                         math.pi * 3 / 2,
+    #                         0,
+    #                         -1,
+    #                         [],
+    #                     ],  # fire directly to the south
+    #                 ],
+    #                 [-1, 100],
+    #             ],
+    #             [
+    #                 [
+    #                     [
+    #                         100,
+    #                         110,
+    #                         100,
+    #                         0,
+    #                         math.pi * 3 / 4,
+    #                         0,
+    #                         1,
+    #                         [],
+    #                     ],  # repair the artillery
+    #                     [
+    #                         100,
+    #                         200,
+    #                         100,
+    #                         0,
+    #                         0,
+    #                         0,
+    #                         -1,
+    #                         ["empowered"],
+    #                     ],  # fire directly to the east
+    #                     [100, 300, 100, 0, -1, 0, 0, ["speedy"]],  # gain MS
+    #                     [100, 400, 100, 100, -1, 0, 0, []],  # shield around
+    #                     [
+    #                         100,
+    #                         500,
+    #                         100,
+    #                         0,
+    #                         math.pi / 2,
+    #                         0,
+    #                         -1,
+    #                         [],
+    #                     ],  # fire directly to the north
+    #                 ],
+    #                 [
+    #                     0,  # explode
+    #                     [
+    #                         700,
+    #                         200,
+    #                         100,
+    #                         0,
+    #                         -1,
+    #                         0,
+    #                         0,
+    #                         ["invisible"],
+    #                     ],  # go invisible
+    #                     [
+    #                         700,
+    #                         300,
+    #                         100,
+    #                         0,
+    #                         -1,
+    #                         0,
+    #                         -1,
+    #                         [],
+    #                     ],
+    #                     [
+    #                         700,
+    #                         400,
+    #                         100,
+    #                         0,
+    #                         math.pi,
+    #                         0,
+    #                         -1,
+    #                         [],
+    #                     ],  # fire directly to the west
+    #                     [
+    #                         700,
+    #                         500,
+    #                         100,
+    #                         0,
+    #                         math.pi * 3 / 2,
+    #                         0,
+    #                         -1,
+    #                         [],
+    #                     ],  # fire directly to the south
+    #                 ],
+    #                 [-1, 90],
+    #             ],
+    #         ],
+    #     ]
+    # )
 
 
 @app.errorhandler(404)
