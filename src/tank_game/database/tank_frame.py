@@ -10,6 +10,7 @@ class TankFrame(dbmodel):
     health = dbcol(dbfloat, nullable = False)
     state = dbcol(dbint, nullable = False)
     invis = dbcol(dbbool, nullable = False)
+    data = dbcol(dbstr(4096), nullable = False)
 
     tank = dbrelate(MatchTanks, backref = dbbackref('frames', lazy = True))
     frame = dbrelate(MatchFrame, backref = dbbackref('tank_frames', lazy = True))
