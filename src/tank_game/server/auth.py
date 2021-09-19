@@ -37,9 +37,7 @@ def verify_jwt(token):
 
 
 def make_jwt(payload):
-    return jwt.encode(payload, app.secret_key, algorithm="HS256").decode(
-        "utf-8"
-    )
+    return jwt.encode(payload, app.secret_key, algorithm="HS256")
 
 
 @app.before_request
