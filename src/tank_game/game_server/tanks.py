@@ -121,7 +121,7 @@ class Tank:
 
     def shield(self):
         self.shielded = True
-        self.shielddur = 1
+        self.shielddur = 10
 
     def ability_cooldown(self, length):
         self.abilitycd = length
