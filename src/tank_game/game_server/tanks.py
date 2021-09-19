@@ -1,9 +1,9 @@
 from enum import Enum
 import json
 
-HEAL_AMT = 20
-HEAL_STUN = 2
-HEAL_CD = 4
+HEAL_AMT = 5
+HEAL_STUN = 5
+HEAL_CD = 10
 
 ART_BUFF = 5
 ART_CD = 5
