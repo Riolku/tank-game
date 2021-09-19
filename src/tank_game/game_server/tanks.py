@@ -1,6 +1,8 @@
 from enum import Enum
 import json
 
+from werkzeug.datastructures import T
+
 HEAL_AMT = 20
 HEAL_STUN = 2
 HEAL_CD = 4
@@ -63,6 +65,8 @@ class Tank:
         self.shielddur = 0
 
         self.attack = 20
+        self.empowered = False
+        self.speedy = False
 
     def get_json(self):
         return {
@@ -76,7 +80,9 @@ class Tank:
             "invis":self.invis,
             "ability_cd":self.abilitycd,
             "speed":self.speed,
-            "shielded":self.shielded
+            "shielded":self.shielded,
+            "empowered":self.empowered,
+            "speedy":self.speedy
         }
 
 
@@ -161,11 +167,13 @@ class ArtilleryTank(Tank):
 
     def ability(self, team_tanks, enemy_tanks, data): #data:NONE/self id
         if(super().ability(team_tanks, enemy_tanks, data)):
+            self.empowered = True
             self.attack += ART_BUFF
             self.ability_cooldown(ART_CD)
             self.ability_duration(ART_DUR)
 
     def cancel_ability(self):
+        self.empowered = False
         self.attack -= ART_BUFF
 
 class AssassinTank(Tank):
@@ -175,11 +183,13 @@ class AssassinTank(Tank):
 
     def ability(self, team_tanks, enemy_tanks, data):#data:NONE/self id
         if(super().ability(team_tanks, enemy_tanks, data)):
+            self.speedy = True
             self.speed += ASS_BUFF
             self.ability_duration(ASS_DUR)
             self.ability_cooldown(ASS_CD)
 
     def cancel_ability(self):
+        self.speedy = False
         self.speed -= ASS_BUFF
 
 

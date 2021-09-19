@@ -12,6 +12,8 @@ class TankFrame(dbmodel):
     invis = dbcol(dbbool, nullable = False)
     ability_cd = dbcol(dbint, nullable = False)
     speed = dbcol(dbfloat, nullable = False)
+    speedy = dbcol(dbbool, nullable=False)
+    empowered = dbcol(dbbool, nullable=False)
     shielded = dbcol(dbbool, nullable = False)
 
     tank = dbrelate(MatchTanks, backref = dbbackref('frames', lazy = True))
