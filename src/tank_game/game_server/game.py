@@ -80,15 +80,12 @@ class Game:
 
         #apply statuses
         for status in event_q:
-            team = []
-            tank = None
-
-            if(status[0]=="RED"):
+            if(status[1]=="RED"):
                 team = self.red_tanks
-            elif(status[0]=="BLUE"):
+            elif(status[1]=="BLUE"):
                 team = self.blue_tanks
 
-            tank = team[status[1]]
+            tank = team[status[0]]
 
             eff_type = status[2]
             eff_amt = status[3]

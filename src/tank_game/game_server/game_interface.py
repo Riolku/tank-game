@@ -54,19 +54,22 @@ class GameInterface:
         blue_info = [t for t in tanks if not t['invis'] or t['team'] == 'BLUE']
 
         red_updates, blue_updates = self.communicator.send_info(red_info, blue_info)
+
+        for u in red_updates:
+            u['team'] = "RED"
+
+        for u in blue_updates:
+            u['team'] = "BLUE"
+
         return red_updates + blue_updates
 
     def serialize(self):
         mf = MatchFrame(mid = self.id, frame_no = self.fn)
         db.session.add(mf)
 
-        print(self.current_frame)
-
         for tank in self.current_frame['tanks']:
             id = tank['id']
             team = tank['team']
-
-            print(tank)
 
             mt = MatchTanks.query.filter_by(mid = self.id, colour = tank['team'], number = tank['id']).first()
             db.session.add(mt)

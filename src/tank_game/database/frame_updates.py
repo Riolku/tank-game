@@ -3,8 +3,9 @@ from .match_frame import MatchFrame
 from .aliases import *
 
 class FrameUpdates(dbmodel):
-    mfid = dbcol(dbint, dbforkey(MatchFrame.id), primary_key = True)
-    mtid = dbcol(dbint, dbforkey(MatchTanks.id), primary_key = True)
+    id = dbcol(dbint, primary_key = True)
+    mfid = dbcol(dbint, dbforkey(MatchFrame.id), nullable = False)
+    mtid = dbcol(dbint, dbforkey(MatchTanks.id), nullable = False)
     action = dbcol(dbstr(16), nullable = False)
     data = dbcol(dbstr(4096), nullable = False)
 
