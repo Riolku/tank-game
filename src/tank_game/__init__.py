@@ -13,6 +13,6 @@ app.config.from_object("tank_game.local_settings")
 
 CORS(app)
 
-celery = Celery(app.import_name)
+celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
 
 db = SQLAlchemy(app)

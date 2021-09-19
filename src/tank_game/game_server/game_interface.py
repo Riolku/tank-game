@@ -17,16 +17,18 @@ class GameInterface:
             self.communicator.start()
 
             self.game_engine = Game()
-            red_team, blue_team = self.communicator.recv_info()
+            red_team, blue_team = self.communicator.send_info(dict(team = 'RED'), dict(team = 'BLUE'))
             self.game_engine.start_game(red_team, blue_team)
             self.init_teams(red_team, blue_team)
 
             self.current_frame = self.game_engine.doframe([])
             self.serialize()
 
-            while not self.game_engine.is_done():
+            while not self.game_engine.is_done() and self.fn <= 120:
                 self.tick()
                 self.serialize()
+
+            db.session.commit()
 
         finally:
             self.communicator.kill()
@@ -41,9 +43,9 @@ class GameInterface:
                     number = num
                 ))
 
-        db.session.commit()
-
     def tick(self):
+        print(self.fn)
+
         self.current_frame = self.game_engine.doframe(self.get_updates())
         self.fn += 1
 
@@ -96,5 +98,3 @@ class GameInterface:
                 action = update['action'],
                 data = json.dumps(update['data'])
             ))
-
-        db.session.commit()

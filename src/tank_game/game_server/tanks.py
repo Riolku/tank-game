@@ -62,7 +62,7 @@ class Tank:
         self.abilitydur = 0
         self.shielddur = 0
 
-        self.attack = 20
+        self.attack = 2
         self.empowered = False
         self.speedy = False
 

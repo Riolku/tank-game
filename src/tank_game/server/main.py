@@ -150,6 +150,7 @@ def challenge(id):
             match = Match(blue_uid=user.id, red_uid=u.id)
             db.session.add(match)
             db.session.commit()
+
             entry.run(match.id)
             return render("challenge.html", match=match.id, target=u), 200
 

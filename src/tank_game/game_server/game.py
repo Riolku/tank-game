@@ -60,6 +60,8 @@ class Game:
         for tank in self.red_tanks+self.blue_tanks:
             tank.update()
 
+        valid_updates = []
+
         #Handle ability usage
         for update in ability:
             team = []
@@ -77,6 +79,8 @@ class Game:
             if tank.state != tanks.TankState.BUSY:
                 for event in tank.ability(team, enemy, update["data"]):
                     event_q.append(event)
+
+                valid_updates.append(update)
 
         #apply statuses
         for status in event_q:
@@ -112,16 +116,20 @@ class Game:
             if(update["team"]=="RED"):
                 team = self.red_tanks
                 enemy = self.blue_tanks
+                enemy_team = "BLUE"
             elif(update["team"]=="BLUE"):
                 team = self.blue_tanks
                 enemy = self.red_tanks
+                enemy_team = "RED"
 
             tank = team[update['id']]
             if tank.state not in (tanks.TankState.BUSY, tanks.TankState.DEAD):
                 #handle obstacle/collision (IF YOU ARE LITERALLY INSANE)
-                event_q2.append([update["data"], enemy, tanks.Status.DAMAGE, tank.attack])
+                event_q2.append([update["data"], enemy_team, tanks.Status.DAMAGE, tank.attack])
 
-        for status in event_q:
+                valid_updates.append(update)
+
+        for status in event_q2:
             team = []
             tank = None
 
@@ -154,8 +162,10 @@ class Game:
                 tank.x = update["data"][0]
                 tank.y = update["data"][1]
 
+                valid_updates.append(update)
+
         frame_info = self.get_state()
-        frame_info["updates"] = updates
+        frame_info["updates"] = valid_updates
 
         return frame_info
 
