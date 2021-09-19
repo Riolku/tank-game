@@ -30,10 +30,10 @@ class Game:
 
     def start_game(self, red_comp, blue_comp):
         for t in range(len(red_comp)):
-            self.red_tanks.append(tanks.Tanks[t](red_comp[t], 0, 0, Team.RED))
+            self.red_tanks.append(tanks.Tanks[red_comp[t]](t, 0, 0, Team.RED))
 
         for t in range(len(blue_comp)):
-            self.blue_tanks.append(tanks.Tanks[t](blue_comp[t], 0, 0 , Team.BLUE))
+            self.blue_tanks.append(tanks.Tanks[blue_comp[t]](t, 0, 0 , Team.BLUE))
 
     def doframe(self, updates):
         ability = []
