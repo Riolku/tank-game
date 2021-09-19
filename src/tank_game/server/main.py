@@ -37,13 +37,18 @@ def serve_submit_page():
 
 @app.route("/submit", methods=["POST"])
 def accept_submission():
+    code = request.form["code"]
+    
+    u = Users.query.filter_by(id=user.id).first()
     if request.form.get("switch") == "on":
         file = request.files["file"]
         code = file.read()
     else:
         code = request.form["code"]
-    print(code)
-    return "TODO", 200
+    u.code = code
+    db.session.commit()
+    flash("Code submitted!", category="SUCCESS")
+    return render("submit.html"), 200
 
 
 @app.route("/signin", methods=["GET"])
