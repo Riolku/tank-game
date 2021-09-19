@@ -166,8 +166,6 @@ $(document).ready(() => {
     var targets = [];
     var barriers;
 
-    var indices = [[], []];
-
     for (var i of [0, 1]) {
       var j = 0;
       for (var x of classes[i]) {
@@ -197,12 +195,9 @@ $(document).ready(() => {
         for (var i of [0, 1]) {
           var remove = [];
           for (var j in data_frames[frame][i]) {
-            var state = tanks[i][indices[i][j]];
+            var state = tanks[i][j];
             var mod = data_frames[frame][i][j];
-            if (mod === 0) {
-              state.dead = 30;
-              remove.push(j);
-            } else {
+            if (state.dead == -1) {
               var [x, y, hp, fire, cd, ability, statuses] = mod;
               if (state.x == -1 && state.y == -1) {
                 state.x = x;
@@ -214,6 +209,10 @@ $(document).ready(() => {
                 state.y = y;
               }
               state.hp = hp;
+              if (hp === 0) {
+                state.dead = 30;
+                continue;
+              }
               if (frame === 0) tmhp[i][j] = hp;
               state.shield = false;
               if (fire != -1) {
@@ -238,7 +237,6 @@ $(document).ready(() => {
           }
           if (frame === 0) bmhp = data_frames[frame][2];
         }
-        for (var x of remove.reverse()) indices[i].splice(x, 1);
         barriers = data_frames[frame][2];
       }
       render_frames.push(JSON.parse(JSON.stringify([tanks, explosions, targets, shots, barriers])));
