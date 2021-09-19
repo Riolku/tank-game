@@ -9,7 +9,6 @@ from flask import flash, redirect, render_template, request
 from .auth import *
 from ..database import Match, MatchFrame, TankFrame, MatchTanks, FrameUpdates, Users, db
 
-
 def url_for_safe(*args, **kwargs):
     try:
         return url_for(*args, **kwargs)
@@ -367,6 +366,15 @@ def match_data(mid):
     #     ]
     # )
 
+@app.route("/users")
+def handle_users():
+    users = Users.query.filter(Users.code!=None).all()
+    print(users)
+    return render("users.html", users = users), 200
+
+@app.route("/battle", methods=["POST"])
+def handle_battle():
+    pass
 
 @app.errorhandler(404)
 def not_found(e):
