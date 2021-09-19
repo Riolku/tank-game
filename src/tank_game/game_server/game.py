@@ -28,17 +28,9 @@ class Game:
 
         return out
 
-    def start_game(self, red_ai_id, blue_ai_id):
-        #get team ai's
-        #get team comps
-        red_comp = []
-
+    def start_game(self, red_comp, blue_comp):
         for t in range(len(red_comp)):
             self.red_tanks.append(tanks.Tanks[t](t, 0, 0, Team.RED))
-
-        #get team ai's
-        #get team comps
-        blue_comp = []
 
         for t in range(len(blue_comp)):
             self.blue_tanks.append(tanks.Tanks[t](t, 0, 0 , Team.BLUE))
@@ -48,7 +40,7 @@ class Game:
         fire = []
         move = []
 
-        statuses_to_apply = []
+        event_q = []
         """
         (Team, id, (STATUS, EFFECT))
         statuses: heal, stun, damage
@@ -71,24 +63,29 @@ class Game:
             elif(update["action"] == "MOVE"):
                 move.append(update)
 
+        for tank in self.red_tanks+self.blue_tanks:
+            tank.update()
+
         #Handle ability usage
         for update in ability:
             team = []
+            enemy = []
             tank = None
 
             if(update["team"]=="RED"):
                 team = self.red_tanks
+                enemy = self.blue_tanks
             elif(update["team"]=="BLUE"):
                 team = self.blue_tanks
+                enemy = self.red_tanks
                 
             tank = team[update['id']]
             if tank.state != tanks.TankState.BUSY:
-                pass #do abilities (statuses)
-            else:
-                tank.stateticker -= 1
+                for event in tank.ability(team, enemy, update["data"]):
+                    event_q.append(event)
         
         #apply statuses
-        for status in statuses_to_apply:
+        for status in event_q:
             team = []
             tank = None
 
@@ -99,16 +96,22 @@ class Game:
                 
             tank = team[status[1]]
 
-            eff_type = status[2][0]
-            eff_amt = status[2][1]
+            eff_type = status[2]
+            eff_amt = status[3]
 
             if tank.state != tanks.TankState.BUSY:
-                if eff_type == tanks.Effects.HEAL:
+                if eff_type == tanks.Status.HEAL:
                     tank.heal(eff_amt)
-                elif eff_type == tanks.Effects.DAMAGE:
+                elif eff_type == tanks.Status.DAMAGE:
                     tank.damage(eff_amt)
-                elif eff_type == tanks.Effects.STUN:
+                elif eff_type == tanks.Status.STUN:
                     tank.stun(eff_amt)
+                elif eff_type == tanks.Status.SHIELD:
+                    tank.shield()
+                elif eff_type ==tanks.Status.HACK:
+                    tank.hack()
+
+        event_q2 = []
 
         #fire lazers
         for update in fire:
@@ -117,13 +120,33 @@ class Game:
 
             if(update["team"]=="RED"):
                 team = self.red_tanks
+                enemy = self.blue_tanks
             elif(update["team"]=="BLUE"):
                 team = self.blue_tanks
+                enemy = self.red_tanks
                 
             tank = team[update['id']]
             if tank.state not in (tanks.TankState.BUSY, tanks.TankState.DEAD):
-                #handle obstacle/collision
-                pass
+                #handle obstacle/collision (IF YOU ARE LITERALLY INSANE)
+                event_q2.append([update["data"], enemy, tanks.Status.DAMAGE, tank.attack])
+
+        for status in event_q:
+            team = []
+            tank = None
+
+            if(status[1]=="RED"):
+                team = self.red_tanks
+            elif(status[1]=="BLUE"):
+                team = self.blue_tanks
+                
+            tank = team[status[0]]
+
+            eff_type = status[2]
+            eff_amt = status[3]
+
+            if tank.state != tanks.TankState.BUSY:
+                if eff_type == tanks.Status.DAMAGE:
+                    tank.damage(eff_amt)
 
         #update positions
         for update in move:
@@ -137,8 +160,8 @@ class Game:
                 
             tank = team[update['id']]
             if tank.state != tanks.TankState.BUSY:
-                tank.x = update["data"]["x"]
-                tank.y = update["data"]["y"]
+                tank.x = update["data"][0]
+                tank.y = update["data"][1]
         
         frame_info = self.get_state()
         frame_info["updates"] = updates
@@ -150,16 +173,8 @@ class Game:
     "id":0,1,2,3,4
     "team":
     "action":"MOVE/ABILITY/FIRE"
-    "MOVE_data":{
-        "pos":{
-            x,y
-        }
-    }
-    "ABILITY_data":{
-        pos/id
-    }
-    "FIRE_data":{
-        id
-    }
+    "MOVE_data":(x, y)
+    "ABILITY_data":(x,y)/(id)
+    "FIRE_data":id
 }
 """     
