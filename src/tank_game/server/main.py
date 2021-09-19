@@ -159,23 +159,22 @@ def match_data(mid):
 
     match_frames = MatchFrame.query.filter_by(mid = mid).order_by(MatchFrame.frame_no).options(joinedload('tank_frames'), joinedload('frame_updates')).all()
 
-    def format_frames_for_team(tanks, frames):
+    def format_frame_for_team(tanks, f):
         ret = []
 
-        for f in frames:
-            for t in tanks:
-                tf = TankFrame.query.with_parent(f).filter_by(mtid = t.id).first()
-                updates = FrameUpdates.query.with_parent(f).filter_by(mtid = t.id).all()
+        for t in tanks:
+            tf = TankFrame.query.with_parent(f).filter_by(mtid = t.id).first()
+            updates = FrameUpdates.query.with_parent(f).filter_by(mtid = t.id).all()
 
-                ret.append([
-                    tf.pos_x,
-                    tf.pos_y,
-                    tf.health,
-                    tf.shielded,
-                    -1,
-                    tf.ability_cd,
-                    []
-                ])
+            ret.append([
+                tf.pos_x,
+                tf.pos_y,
+                tf.health,
+                tf.shielded,
+                -1,
+                tf.ability_cd,
+                []
+            ])
 
         return ret
 
@@ -187,8 +186,8 @@ def match_data(mid):
             [ bt.type for bt in blue_tanks ],
         ],
         [
-            format_frames_for_team(red_tanks, match_frames),
-            format_frames_for_team(blue_tanks, match_frames)
+            [ format_frame_for_team(red_tanks, match_frames), format_frame_for_team(blue_tanks, f)]
+            for f in match_frames
         ]
     ])
 
