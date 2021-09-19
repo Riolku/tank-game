@@ -68,9 +68,6 @@ class GameInterface:
         db.session.add(mf)
 
         for tank in self.current_frame['tanks']:
-            id = tank['id']
-            team = tank['team']
-
             mt = MatchTanks.query.filter_by(mid = self.id, colour = tank['team'], number = tank['id']).first()
             db.session.add(mt)
 
@@ -88,10 +85,7 @@ class GameInterface:
             ))
 
         for update in self.current_frame['updates']:
-            id = update['id']
-            team = update['team']
-
-            mt = MatchTanks.query.filter_by(mid = self.id, colour = tank['team'], number = tank['id']).first()
+            mt = MatchTanks.query.filter_by(mid = self.id, colour = update['team'], number = update['id']).first()
             db.session.add(mt)
 
             mt.updates.append(FrameUpdates(
