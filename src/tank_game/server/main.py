@@ -112,7 +112,7 @@ def handle_signout_request():
 
 @app.route("/userlist")
 def serve_userlist():
-    return render("userlist.html", users=Users.query.all())
+    return render("userlist.html", users=Users.query.filter(Users.code!=None).all())
 
 
 @app.route("/challenge/<int:id>")
@@ -364,16 +364,6 @@ def match_data(mid):
     #         ],
     #     ]
     # )
-
-@app.route("/users")
-def handle_users():
-    users = Users.query.filter(Users.code!=None).all()
-    print(users)
-    return render("users.html", users = users), 200
-
-@app.route("/battle", methods=["POST"])
-def handle_battle():
-    pass
 
 @app.errorhandler(404)
 def not_found(e):
