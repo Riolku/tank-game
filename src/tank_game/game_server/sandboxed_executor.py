@@ -9,8 +9,9 @@ load_executors()  # Configure DMOJ executors
 Executor = executors['PY3'].Executor
 
 def get_executor(submission_source: str):
-    # TODO: get api wrapper from a file
-    wrapper_code = "import submission; submission.run()"
+    with open("tank_game/game_server/api.py") as f:
+        wrapper_code = f.read()
+
     e = Executor("tank-game", utf8bytes(wrapper_code))
     with open(e._file("submission.py"), "w") as f:
         f.write(submission_source)
