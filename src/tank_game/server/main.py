@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import json, math, os, sys, time
+import argon2, json, math, os, sys, time
 
-from flask import render_template, request
+from flask import flash, render_template, request
 
 from .auth import *
+from ..database import Users, db
 
 
 def url_for_safe(*args, **kwargs):
@@ -53,9 +54,37 @@ def serve_signin_page():
     return render("signin.html"), 200
 
 
+@app.route("/signin", methods=["POST"])
+def handle_signin_request():
+    print(request.form)
+    return ""
+
+
 @app.route("/signup", methods=["GET"])
 def serve_signup_page():
     return render("signup.html"), 200
+
+
+@app.route("/signup", methods=["POST"])
+def handle_signup_request():
+    username = request.form["username"]
+    password = request.form["password"]
+
+    if password != request.form["rpassword"]:
+        flash("Passwords don't match.", category="ERROR")
+        return render("signup.html"), 200
+    elif Users.query.filter_by(username=username).count() > 0:
+        flash("Username is already taken.", category="ERROR")
+        return render("signup.html"), 200
+    else:
+        user = Users(
+            username=username, password=argon2.argon2_hash(password, username)
+        )
+        db.session.add(user)
+        db.session.commit()
+        set_user(user)
+        flash("Welcome! Your account has been created.", category="SUCCESS")
+        return render("/"), 200
 
 
 @app.route("/replay-viewer/<int:match>")

@@ -28,6 +28,11 @@
       {% endblock %}
     </header>
     <main>
+      {% for category, message in get_flashed_messages(with_categories = True) %}
+      <div class="status-box status-box--{{ category }}">
+        {{ message }}
+      </div>
+      {% endfor %}
       {% block main %}
       {% endblock %}
     </main>

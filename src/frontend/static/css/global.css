@@ -36,3 +36,18 @@ p {
   border-radius: 0 !important;
   outline: 0 !important;
 }
+
+.status-box {
+  border-radius: 5px;
+  width: 100%;
+}
+
+.status-box--ERROR {
+  background-color: #eaa;
+  border: 1px solid red;
+}
+
+.status-box--SUCCESS {
+  background-color: #aea;
+  broder: 1px solid green;
+}

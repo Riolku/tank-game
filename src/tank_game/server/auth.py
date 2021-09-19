@@ -58,3 +58,16 @@ def resolve_user():
                 set_user(u)
     except:
         pass
+
+
+@app.after_request
+def set_user_cookie(response):
+    if user:
+        set_cookie(response, "user", make_jwt(user.id))
+    else:
+        set_cookie(response, "user", "")
+    return response
+
+
+def set_cookie(response, key, val):
+    response.set_cookie(key, val)

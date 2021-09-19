@@ -6,19 +6,19 @@
   <form class="col s12" action="/signin" method="post">
     <div class="row">
         <div class="input-field col s5">
-            <input id="username" type="text" data-length="40">
+            <input name="username" id="username" type="text" data-length="40" required>
             <label for="username">Username</label>
         </div>
     </div>
-    <div class="row">   
+    <div class="row">
         <div class="input-field col s5">
-            <input id="password" type="password">
+            <input name="password" id="password" type="password" required>
             <label for="password">Password</label>
         </div>
     </div>
     <div class="row">
         <div class="col s12">
-            <button class="deep-purple darken-2 waves-effect waves-light btn" type="submit" name="action">Sign In <i class="material-icons right">send</i></button>
+            <button class="deep-purple darken-2 waves-effect waves-light btn" type="submit">Sign In <i class="material-icons right">send</i></button>
         </div>
     </div>
   </form>

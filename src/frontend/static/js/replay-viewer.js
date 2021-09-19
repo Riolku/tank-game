@@ -19,7 +19,7 @@ function run() {
     }
   }
   $("#timeline").val(cframe);
-  setTimeout(run, 1000 / 60 / speed_mul);
+  setTimeout(run, 1000 / 24 / speed_mul);
 }
 
 run();
@@ -91,7 +91,7 @@ function render() {
   }
   // render targeting reticles
   for (var t of render_frames[cframe][2]) {
-    drawImage(ctx, "/static/images/mortar_target_icon.png", 0.2, t[1], t[2], 0, t[0] / 40, false);
+    drawImage(ctx, "/static/images/mortar_target_icon.png", 0.2, t[1], t[2], 0, Math.max(0, t[0] - 15) / 30, false);
   }
   // render tanks
   for (var t of [0, 1]) {
@@ -103,6 +103,10 @@ function render() {
       drawImage(ctx, "/static/images/" + team + "_tank.png", scale, tank.x, tank.y, tank.angle, alpha, tank.dead != -1);
       drawImage(ctx, "/static/images/" + team + "_" + classid + "_turret.png", scale, tank.x, tank.y, tank.barrel, alpha, tank.dead != -1);
     }
+  }
+  // render explosions
+  for (var t of render_frames[cframe][2]) {
+    drawImage(ctx, "/static/images/topdown_explosion.png", 0.2, t[1], t[2], 0, t[0] / 30, false);
   }
   requestAnimationFrame(render);
 }
