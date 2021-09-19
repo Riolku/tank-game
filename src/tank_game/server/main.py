@@ -16,6 +16,7 @@ from ..database import (
     Users,
     db,
 )
+from ..game_server import entry
 
 
 def url_for_safe(*args, **kwargs):
@@ -146,7 +147,11 @@ def challenge(id):
             )
             return redirect("/userlist"), 303
         else:
-            return render("challenge.html", match=0, target=u), 200
+            match = Match(blue_uid=user.id, red_uid=u.id)
+            db.session.add(match)
+            db.session.commit()
+            entry.run(match.id)
+            return render("challenge.html", match=match.id, target=u), 200
 
 
 @app.route("/replay-viewer/<int:mid>")
