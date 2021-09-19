@@ -2,7 +2,7 @@
 
 import argon2, json, math, os, sys, time
 
-from flask import flash, render_template, request
+from flask import flash, redirect, render_template, request
 
 from .auth import *
 from ..database import Users, db
@@ -56,8 +56,20 @@ def serve_signin_page():
 
 @app.route("/signin", methods=["POST"])
 def handle_signin_request():
-    print(request.form)
-    return ""
+    username = request.form["username"]
+    password = request.form["password"]
+
+    u = Users.query.filter_by(username=username).first()
+    if u is None:
+        flash("Username and password don't match.", category="ERROR")
+        return render("signin.html"), 200
+    elif argon2.argon2_hash(password, username) != u.password:
+        flash("Username and password don't match.", category="ERROR")
+        return render("signin.html"), 200
+    else:
+        set_user(u)
+        flash("Welcome back!", category="SUCCESS")
+        return redirect("/"), 303
 
 
 @app.route("/signup", methods=["GET"])
@@ -84,7 +96,7 @@ def handle_signup_request():
         db.session.commit()
         set_user(user)
         flash("Welcome! Your account has been created.", category="SUCCESS")
-        return render("/"), 200
+        return redirect("/"), 303
 
 
 @app.route("/replay-viewer/<int:match>")

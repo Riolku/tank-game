@@ -24,8 +24,10 @@
     <header>
       {% include 'navbar.html' %}
 
-      {% block header %}
-      {% endblock %}
+      <div id="header-content">
+        {% block header %}
+        {% endblock %}
+      </div>
     </header>
     <main>
       {% for category, message in get_flashed_messages(with_categories = True) %}

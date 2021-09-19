@@ -11,6 +11,10 @@ body {
   flex-direction: column;
 }
 
+div#header-content {
+  padding: 0 10%;
+}
+
 main {
   flex: 1 0 auto;
   padding: 0 10%;
@@ -40,6 +44,7 @@ p {
 .status-box {
   border-radius: 5px;
   width: 100%;
+  padding: 1em;
 }
 
 .status-box--ERROR {

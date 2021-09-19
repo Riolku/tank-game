@@ -8,6 +8,8 @@ from werkzeug.local import Local
 
 from tank_game import app
 
+from ..database import Users
+
 user_manager = Local()
 user = user_manager("user")
 
@@ -42,9 +44,6 @@ def make_jwt(payload):
 
 @app.before_request
 def resolve_user():
-    if request.endpoint == "static":
-        return
-
     set_user(None)
 
     try:
@@ -63,7 +62,7 @@ def resolve_user():
 @app.after_request
 def set_user_cookie(response):
     if user:
-        set_cookie(response, "user", make_jwt(user.id))
+        set_cookie(response, "user", make_jwt({"uid": user.id}))
     else:
         set_cookie(response, "user", "")
     return response

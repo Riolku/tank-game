@@ -2,12 +2,12 @@
   <nav>
     <div class="nav-wrapper deep-purple">
       <ul id="nav-mobile" class="">
-        {% for url, name in [["/", "Home"], ["/submit", "Submit"]] %}
+        {% for url, name in [["/", "Home"]] %}
         <li class="left"><a href="{{ url }}" class="{{ 'bolded' if request.endpoint and url_for_safe(request.endpoint) == url else '' }}">{{ name }}</a></li>
         {% endfor %}
 
         {% if user %}
-        <li class="right"><a href="/profile">Profile</a></li>
+        <li class="right"><a href="/submit">Submit</a></li>
         <li class="right"><a href="/signout">Sign out</a></li>
         {% else %}
         <li class="right"><a href="/signup">Sign up</a></li>
