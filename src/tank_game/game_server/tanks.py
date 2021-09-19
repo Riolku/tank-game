@@ -1,8 +1,6 @@
 from enum import Enum
 import json
 
-from werkzeug.datastructures import T
-
 HEAL_AMT = 20
 HEAL_STUN = 2
 HEAL_CD = 4
