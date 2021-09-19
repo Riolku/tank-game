@@ -37,6 +37,8 @@ classes are:
 - mortar
 - hack - ability should inflict "hacked"
 
+status effects should toggle off with `~name`
+
 ## Hierarchy
 
 - file
