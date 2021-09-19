@@ -95,7 +95,7 @@ function render() {
   }
   // render shots
   for (var t of render_frames[cframe][3]) {
-    ctx.strokeStyle = "#000" + ["0", "3", "6", "9", "c", "f"][t[0]];
+    ctx.strokeStyle = "#000" + ["0", "1", "2", "4", "8", "f"][t[0]];
     ctx.beginPath();
     ctx.moveTo(t[1], t[2]);
     ctx.lineTo(t[1] + 1000 * Math.cos(t[3]), t[2] + 1000 * Math.sin(t[3]));
