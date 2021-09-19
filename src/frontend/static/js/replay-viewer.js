@@ -185,7 +185,6 @@ $(document).ready(() => {
           "healed": 0,
           "dead": -1
         });
-        indices[i].push(j++);
       }
     }
 
