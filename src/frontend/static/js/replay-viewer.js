@@ -26,7 +26,7 @@ run();
 
 var canvas, ctx;
 
-var bmhp;
+var bmhp, tmhp = [[], []];
 
 var classmap = {
   "repair": "repair",
@@ -93,20 +93,39 @@ function render() {
   for (var t of render_frames[cframe][2]) {
     drawImage(ctx, "/static/images/mortar_target_icon.png", 0.2, t[1], t[2], 0, Math.max(0, t[0] - 15) / 30, false);
   }
+  // render shots
+  for (var t of render_frames[cframe][3]) {
+    ctx.strokeStyle = "#000" + ["0", "3", "6", "9", "c", "f"][t[0]];
+    ctx.beginPath();
+    ctx.moveTo(t[1], t[2]);
+    ctx.lineTo(t[1] + 1000 * Math.cos(t[3]), t[2] + 1000 * Math.sin(t[3]));
+    ctx.stroke();
+  }
   // render tanks
   for (var t of [0, 1]) {
-    for (var tank of render_frames[cframe][0][t]) {
+    for (var i in render_frames[cframe][0][t]) {
+      tank = render_frames[cframe][0][t][i];
+      mhp = tmhp[t][i];
       var team = ["blue", "red"][t];
       var classid = classmap[tank.class];
       var scale = 0.15;
       var alpha = tank.dead == -1 ? tank.invisible ? 0.6 : 1 : tank.dead / 30;
       drawImage(ctx, "/static/images/" + team + "_tank.png", scale, tank.x, tank.y, tank.angle, alpha, tank.dead != -1);
       drawImage(ctx, "/static/images/" + team + "_" + classid + "_turret" + (tank.empowered ? "_empowered" : "") + ".png", scale, tank.x, tank.y, tank.barrel, alpha, tank.dead != -1);
+      if (tank.dead != -1) continue;
+      ctx.fillStyle = "#3a3";
+      ctx.beginPath();
+      ctx.moveTo(tank.x - 20, tank.y - 40);
+      ctx.lineTo(tank.x - 20 + 40 * tank.hp / mhp, tank.y - 40);
+      ctx.lineTo(tank.x - 20 + 40 * tank.hp / mhp, tank.y - 35);
+      ctx.lineTo(tank.x - 20, tank.y - 35);
+      ctx.closePath();
+      ctx.fill();
     }
   }
   // render explosions
-  for (var t of render_frames[cframe][2]) {
-    drawImage(ctx, "/static/images/topdown_explosion.png", 0.2, t[1], t[2], 0, t[0] / 30, false);
+  for (var t of render_frames[cframe][1]) {
+    drawImage(ctx, "/static/images/topdown_explosion.png", 0.2, t[1], t[2], 0, t[0] / 40, false);
   }
   requestAnimationFrame(render);
 }
@@ -195,9 +214,10 @@ $(document).ready(() => {
                 state.y = y;
               }
               state.hp = hp;
+              if (frame === 0) tmhp[i][j] = hp;
               state.shield = shield;
               if (fire != -1) {
-                // TODO: compute shot
+                shots.push([5, x, y, fire]);
                 state.barrel = fire;
               }
               state.cd = cd;
@@ -205,17 +225,17 @@ $(document).ready(() => {
                 if (state.class == "repair") {
                   tanks[i][ability].healed = 30;
                 } else if (state.class == "kamikaze") {
-                  explosions.push([state.x, state.y, 30]);
+                  explosions.push([30, state.x, state.y]);
                 } else if (state.class == "mortar") {
                   var [tx, ty] = ability;
                   targets.push([30, tx, ty]);
-                  explosions.push([30, tx, ty]);
+                  explosions.push([60, tx, ty]);
                 }
               }
               statuses.forEach(status => {
                 if (status[0] == "~") state[status.substring(1)] = false;
                 else state[status] = true;
-              }
+              });
             }
           }
           if (frame === 0) bmhp = data_frames[frame][2];
@@ -240,6 +260,7 @@ $(document).ready(() => {
         }
       }
     }
+
     render();
   });
 });
