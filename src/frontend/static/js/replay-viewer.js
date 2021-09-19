@@ -18,6 +18,16 @@ var classmap = {
   "hack": "hack_the_north"
 };
 
+function drawImage(ctx, path, scale, x, y, angle) {
+  var image = document.createElement("img");
+  image.src = path;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+  ctx.drawImage(image, -width * scale / 2, -height * scale / 2);
+  ctx.restore();
+}
+
 function render() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (var x in map) {
@@ -53,17 +63,8 @@ function render() {
     for (var tank of render_frames[cframe][0][t]) {
       var team = ["blue", "red"][t];
       var classid = classmap[tank.class];
-      var path = "/static/images/" + team + "_" + classid + "_turret.png";
-      var image = document.createElement("img");
-      image.src = path;
-      var scale = 0.25;
-      var width = image.width * scale;
-      var height = image.height * scale;
-      ctx.save();
-      ctx.translate(tank.x, tank.y);
-      ctx.rotate(tank.barrel);
-      ctx.drawImage(image, tank.x - width / 2, tank.y - height / 2, width, height);
-      ctx.restore();
+      drawImage(ctx, "static/images/" + team + "_tank.png", 0.25, tank.x, tank.y, tank.angle);
+      drawImage(ctx, "/static/images/" + team + "_" + classid + "_turret.png", 0.25, tank.x, tank.y, tank.barrel);
     }
   }
   requestAnimationFrame(render);
@@ -197,4 +198,4 @@ $(document).ready(() => {
 
     render();
   });
-})
+});
