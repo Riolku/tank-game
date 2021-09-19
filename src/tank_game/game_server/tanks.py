@@ -250,7 +250,7 @@ class HTNTank(Tank):
             return events
 
 Tanks = {
-    "htn":HTNTank,
+    "hack":HTNTank,
     "mortar":MortarTank,
     "scout":ScoutTank,
     "kamikaze":KamikazeTank,
