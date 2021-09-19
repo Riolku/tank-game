@@ -24,10 +24,10 @@ class Game:
 
     def start_game(self, red_comp, blue_comp):
         for t in range(len(red_comp)):
-            self.red_tanks.append(tanks.Tanks[red_comp[t]](t, 100, 100*t, "RED"))
+            self.red_tanks.append(tanks.Tanks[red_comp[t]](t, 100, 100*(t+1), "RED"))
 
         for t in range(len(blue_comp)):
-            self.blue_tanks.append(tanks.Tanks[blue_comp[t]](t, 700, 100*t, "BLUE"))
+            self.blue_tanks.append(tanks.Tanks[blue_comp[t]](t, 700, 100*(t+1), "BLUE"))
 
     def doframe(self, updates):
         ability = []
