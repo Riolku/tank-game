@@ -155,7 +155,7 @@ def replay_viewer(mid):
     return (
         render(
             "replay-viewer.html",
-            match=match,
+            match=mid,
             frames=MatchFrame.query.filter_by(mid=mid).count(),
         ),
         200,
