@@ -2,7 +2,7 @@
   <nav>
     <div class="nav-wrapper deep-purple">
       <ul id="nav-mobile" class="">
-        {% for url, name in [["/", "Home"]] %}
+        {% for url, name in [["/", "Home"], ["/userlist", "User List"]] %}
         <li class="left"><a href="{{ url }}" class="{{ 'bolded' if request.endpoint and url_for_safe(request.endpoint) == url else '' }}">{{ name }}</a></li>
         {% endfor %}
 

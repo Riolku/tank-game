@@ -5,7 +5,7 @@ import argon2, json, math, os, sys, time
 from flask import flash, redirect, render_template, request
 
 from .auth import *
-from ..database import Users, db
+from ..database import *
 
 
 def url_for_safe(*args, **kwargs):
@@ -31,7 +31,7 @@ def serve_submit_page():
     if not user:
         return redirect("/"), 303
     else:
-        return render("submit.html", code = user.code), 200
+        return render("submit.html", code=user.code or ""), 200
 
 
 @app.route("/submit", methods=["POST"])
@@ -44,7 +44,7 @@ def accept_submission():
     user.code = code
     db.session.commit()
     flash("Code submitted!", category="SUCCESS")
-    return render("submit.html", code = code), 200
+    return render("submit.html", code=user.code or ""), 200
 
 
 @app.route("/signin", methods=["GET"])
@@ -105,10 +105,45 @@ def handle_signout_request():
     return redirect("/"), 303
 
 
+@app.route("/userlist")
+def serve_userlist():
+    return render("userlist.html", users=Users.query.all())
+
+
+@app.route("/challenge/<int:id>")
+def challenge(id):
+    if not user:
+        flash("You must be signed in!", category="ERROR")
+        return redirect("/signin"), 303
+    else:
+        u = Users.query.filter_by(id=id).first()
+        if u is None:
+            flash("Opponent does not exist!", category="ERROR")
+            return redirect("/userlist"), 303
+        elif user.id == id:
+            flash("You cannot challenge yourself!", category="ERROR")
+            return redirect("/userlist"), 303
+        elif not u.code.strip():
+            flash(
+                "You cannot challenge someone who hasn't submitted code!",
+                category="ERROR",
+            )
+            return redirect("/userlist"), 303
+        else:
+            return render("challenge.html", match=0, target=u), 200
+
+
 @app.route("/replay-viewer/<int:match>")
 def replay_viewer(match):
-    # TODO get actual match data
-    return render("replay-viewer.html", match=match, frames=1), 200
+    match = Match.query.filter_by(id=match).first_or_404()
+    return (
+        render(
+            "replay-viewer.html",
+            match=match,
+            frames=MatchFrame.query.filter_by(mid=match).count(),
+        ),
+        200,
+    )
 
 
 @app.route("/match-data/<int:match>")

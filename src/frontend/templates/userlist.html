@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+
+{% block header %}
+<h2>User List</h2>
+{% endblock %}
+
+{% block main %}
+<table>
+  <tr>
+    <th>Username</th>
+    <th>Points (TODO)</th>
+  </tr>
+  {% for u in users %}
+  <tr>
+    <td>
+      {{ u.username }}
+      {% if u != user and u.code %}
+      <a href="/challenge/{{ u.id }}">(challenge)</a>
+      {% endif %}
+    </td>
+    <td>0</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

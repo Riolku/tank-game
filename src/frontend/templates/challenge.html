@@ -1,0 +1,9 @@
+{% extends 'layout.html' %}
+
+{% block header %}
+<h2>Challenge Successful</h2>
+{% endblock %}
+
+{% block main %}
+<p>You have successfully challenged <b>{{ target.username }}</b>. Once the match is done (it should only take a few seconds), you can view the replay <a href="/replay-viewer/{{ match }}">here</a>.</p>
+{% endblock %}
