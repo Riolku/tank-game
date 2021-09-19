@@ -6,5 +6,5 @@ class Match(dbmodel):
     red_uid = dbcol(dbint, dbforkey(Users.id), nullable = False)
     blue_uid = dbcol(dbint, dbforkey(Users.id), nullable = False)
 
-    red_user = dbrelate(Users, backref = dbbackref('matches', lazy = True))
-    blue_user = dbrelate(Users, backref = dbbackref('matches', lazy = True))
+    red_user = dbrelate(Users, foreign_keys = [ red_uid ], backref = dbbackref('matches', lazy = True))
+    blue_user = dbrelate(Users, foreign_keys = [ blue_uid ], backref = dbbackref('matches', lazy = True))
