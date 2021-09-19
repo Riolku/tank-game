@@ -172,6 +172,8 @@ class ArtilleryTank(Tank):
             self.ability_cooldown(ART_CD)
             self.ability_duration(ART_DUR)
 
+        return []
+
     def cancel_ability(self):
         self.empowered = False
         self.attack -= ART_BUFF
@@ -188,6 +190,8 @@ class AssassinTank(Tank):
             self.ability_duration(ASS_DUR)
             self.ability_cooldown(ASS_CD)
 
+        return []
+
     def cancel_ability(self):
         self.speedy = False
         self.speed -= ASS_BUFF
@@ -199,9 +203,10 @@ class ShieldTank(Tank):
         self.type = "shield"
 
     def ability(self, team_tanks, enemy_tanks, data):#data:id
+        events = []
         if(super().ability(team_tanks, enemy_tanks, data)):
             events = [[data, self.team, Status.SHIELD, 0]]
-            return events
+        return events
 
 class KamikazeTank(Tank):
     def __init__(self, id, x, y, team):
@@ -209,15 +214,15 @@ class KamikazeTank(Tank):
         self.type = "kamikaze"
 
     def ability(self, team_tanks, enemy_tanks, data):#data:(x,y)
+        events = []
         if(super().ability(team_tanks, enemy_tanks, data)):
-            events = []
             tanks = team_tanks+enemy_tanks
             for tank in tanks:
                 if self.x-KAMI_RAD < tank.x < self.x+KAMI_RAD and self.y-KAMI_RAD < tank.y < self.y+KAMI_RAD:
                     events.append([tank.id, tank.team, Status.DAMAGE, KAMI_DMG])
 
             events.append([self.id, self.team, Status.DAMAGE, 727])
-            return events
+        return events
 
 class ScoutTank(Tank):
     def __init__(self, id, x, y, team):
@@ -225,11 +230,12 @@ class ScoutTank(Tank):
         self.type = "scout"
 
     def ability(self, team_tanks, enemy_tanks, data):#data:NONE/self id
+        events = []
         if(super().ability(team_tanks, enemy_tanks, data)):
             events = [[self.id, self.team, Status.INVIS, 0]]
             self.ability_cooldown(SCT_CD)
             self.ability_duration(SCT_DUR)
-            return events
+        return events
 
 class MortarTank(Tank):
     def __init__(self, id, x, y, team):
@@ -237,8 +243,8 @@ class MortarTank(Tank):
         self.type = "mortar"
 
     def ability(self, team_tanks, enemy_tanks, data): #data:(x,y)
+        events = []
         if(super().ability(team_tanks, enemy_tanks, data)):
-            events = []
 
             x=data[0]
             y=data[1]
@@ -249,7 +255,7 @@ class MortarTank(Tank):
                     events.append([tank.id, tank.team, Status.STUN, MOR_STUN])
 
             self.ability_cooldown(MOR_CD)
-            return events
+        return events
 
 class HTNTank(Tank):
     def __init__(self, id, x, y, team):
@@ -257,10 +263,11 @@ class HTNTank(Tank):
         self.type = "htn"
 
     def ability(self, team_tanks, enemy_tanks, data):#data:id
+        events = []
         if(super().ability(team_tanks, enemy_tanks, data)):
             events = [[data, enemy_tanks, Status.HACK, 0]]
             self.ability_cooldown(HTN_CD)
-            return events
+        return events
 
 Tanks = {
     "hack":HTNTank,
