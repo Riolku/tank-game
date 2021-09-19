@@ -101,7 +101,7 @@ function render() {
       var scale = 0.15;
       var alpha = tank.dead == -1 ? tank.invisible ? 0.6 : 1 : tank.dead / 30;
       drawImage(ctx, "/static/images/" + team + "_tank.png", scale, tank.x, tank.y, tank.angle, alpha, tank.dead != -1);
-      drawImage(ctx, "/static/images/" + team + "_" + classid + "_turret.png", scale, tank.x, tank.y, tank.barrel, alpha, tank.dead != -1);
+      drawImage(ctx, "/static/images/" + team + "_" + classid + "_turret" + (tank.empowered ? "_empowered" : "") + ".png", scale, tank.x, tank.y, tank.barrel, alpha, tank.dead != -1);
     }
   }
   // render explosions
@@ -212,7 +212,10 @@ $(document).ready(() => {
                   explosions.push([30, tx, ty]);
                 }
               }
-              statuses.forEach(status => state[status] = true);
+              statuses.forEach(status => {
+                if (status[0] == "~") state[status.substring(1)] = false;
+                else state[status] = true;
+              }
             }
           }
           if (frame === 0) bmhp = data_frames[frame][2];
