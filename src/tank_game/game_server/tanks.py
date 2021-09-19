@@ -6,6 +6,11 @@ class TankState(Enum):
     BUSY = 1
     DEAD = 2
 
+class Effects(Enum):
+    HEAL=0
+    DAMAGE=1
+    STUN=2
+
 class Tank:
     def __init__(self, id, x, y, team):
         self.id = id
@@ -34,6 +39,18 @@ class Tank:
             "state":self.state,
             "invis":self.invis
         })
+    
+    def damage(self, damage):
+        self.health -= damage
+        if self.health <= 0:
+            self.state=TankState.DEAD
+
+    def heal(self, amount):
+        self.health += amount
+    
+    def stun(self, amount):
+        self.state = TankState.BUSY
+        self.stateticker = amount
 
 class RepairTank(Tank):
     def __init__(self, id, x, y, team):

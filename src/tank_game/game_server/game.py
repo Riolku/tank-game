@@ -26,7 +26,7 @@ class Game:
             out_tanks.append(str(tank))
         out["tanks"] = out_tanks
 
-        return json.dumps(out)
+        return out
 
     def start_game(self, red_ai_id, blue_ai_id):
         #get team ai's
@@ -51,6 +51,16 @@ class Game:
         statuses_to_apply = []
         """
         (Team, id, (STATUS, EFFECT))
+        statuses: heal, stun, damage
+        """
+
+        """
+        update:{
+            "id":0,1,2,3,4
+            "team":red/blue
+            "action":"MOVE/ABILITY/FIRE"
+            "data":{}
+        }
         """
 
         for update in updates:
@@ -61,6 +71,7 @@ class Game:
             elif(update["action"] == "MOVE"):
                 move.append(update)
 
+        #Handle ability usage
         for update in ability:
             team = []
             tank = None
@@ -76,7 +87,7 @@ class Game:
             else:
                 tank.stateticker -= 1
         
-        #apply statusie
+        #apply statuses
         for status in statuses_to_apply:
             team = []
             tank = None
@@ -87,11 +98,19 @@ class Game:
                 team = self.blue_tanks
                 
             tank = team[status[1]]
-            effect = status[2]
+
+            eff_type = status[2][0]
+            eff_amt = status[2][1]
 
             if tank.state != tanks.TankState.BUSY:
-                
+                if eff_type == tanks.Effects.HEAL:
+                    tank.heal(eff_amt)
+                elif eff_type == tanks.Effects.DAMAGE:
+                    tank.damage(eff_amt)
+                elif eff_type == tanks.Effects.STUN:
+                    tank.stun(eff_amt)
 
+        #fire lazers
         for update in fire:
             team = []
             tank = None
@@ -102,10 +121,11 @@ class Game:
                 team = self.blue_tanks
                 
             tank = team[update['id']]
-            if tank.state != tanks.TankState.BUSY:
+            if tank.state not in (tanks.TankState.BUSY, tanks.TankState.DEAD):
                 #handle obstacle/collision
                 pass
 
+        #update positions
         for update in move:
             team = []
             tank = None
@@ -120,7 +140,10 @@ class Game:
                 tank.x = update["data"]["x"]
                 tank.y = update["data"]["y"]
         
-        return self.get_state()
+        frame_info = self.get_state()
+        frame_info["updates"] = updates
+
+        return json.dumps(frame_info)
 
 """
 {
@@ -139,6 +162,4 @@ class Game:
         id
     }
 }
-""" 
-
-    
+"""     
