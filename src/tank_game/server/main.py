@@ -56,7 +56,7 @@ def handle_signin_request():
     if u is None:
         flash("Username and password don't match.", category="ERROR")
         return render("signin.html"), 200
-    elif argon2.argon2_hash(password, username) != u.password:
+    elif argon2.argon2_hash(password, username + "abcdefgh") != u.password:
         flash("Username and password don't match.", category="ERROR")
         return render("signin.html"), 200
     else:
@@ -83,13 +83,20 @@ def handle_signup_request():
         return render("signup.html"), 200
     else:
         user = Users(
-            username=username, password=argon2.argon2_hash(password, username)
+            username=username, password=argon2.argon2_hash(password, username + "abcdefgh")
         )
         db.session.add(user)
         db.session.commit()
         set_user(user)
         flash("Welcome! Your account has been created.", category="SUCCESS")
         return redirect("/"), 303
+
+
+@app.route("/signout")
+def handle_signout_request():
+    set_user(None)
+    flash("Goodbye!", category="SUCCESS")
+    return redirect("/"), 303
 
 
 @app.route("/replay-viewer/<int:match>")
@@ -213,7 +220,7 @@ def match_data(match):
                             0,
                             0,
                             -1,
-                            [],
+                            ["empowered"],
                         ],  # fire directly to the east
                         [100, 300, 100, 0, -1, 0, 0, ["speedy"]],  # gain MS
                         [100, 400, 100, 100, -1, 0, 0, []],  # shield around
