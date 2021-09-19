@@ -1,5 +1,5 @@
 from enum import Enum
-import tanks
+from tank_game.game_server import tanks
 import json
 
 class Team(Enum):
@@ -15,7 +15,7 @@ class Game:
         """[
             [["x1", "y1"], ["x2", "y2"], ["x3", "y3"], ["x4", "y4"]]
         ],"""
-    
+
     def get_state(self):
         out = {}
 
@@ -78,12 +78,12 @@ class Game:
             elif(update["team"]=="BLUE"):
                 team = self.blue_tanks
                 enemy = self.red_tanks
-                
+
             tank = team[update['id']]
             if tank.state != tanks.TankState.BUSY:
                 for event in tank.ability(team, enemy, update["data"]):
                     event_q.append(event)
-        
+
         #apply statuses
         for status in event_q:
             team = []
@@ -93,7 +93,7 @@ class Game:
                 team = self.red_tanks
             elif(status[0]=="BLUE"):
                 team = self.blue_tanks
-                
+
             tank = team[status[1]]
 
             eff_type = status[2]
@@ -124,7 +124,7 @@ class Game:
             elif(update["team"]=="BLUE"):
                 team = self.blue_tanks
                 enemy = self.red_tanks
-                
+
             tank = team[update['id']]
             if tank.state not in (tanks.TankState.BUSY, tanks.TankState.DEAD):
                 #handle obstacle/collision (IF YOU ARE LITERALLY INSANE)
@@ -138,7 +138,7 @@ class Game:
                 team = self.red_tanks
             elif(status[1]=="BLUE"):
                 team = self.blue_tanks
-                
+
             tank = team[status[0]]
 
             eff_type = status[2]
@@ -157,12 +157,12 @@ class Game:
                 team = self.red_tanks
             elif(update["team"]=="BLUE"):
                 team = self.blue_tanks
-                
+
             tank = team[update['id']]
             if tank.state != tanks.TankState.BUSY:
                 tank.x = update["data"][0]
                 tank.y = update["data"][1]
-        
+
         frame_info = self.get_state()
         frame_info["updates"] = updates
 
@@ -177,4 +177,4 @@ class Game:
     "ABILITY_data":(x,y)/(id)
     "FIRE_data":id
 }
-"""     
+"""

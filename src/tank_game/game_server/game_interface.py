@@ -1,6 +1,6 @@
 import json
 
-from tank_game.database import db, Bots, MatchFrame, MatchTanks, Match, TankFrame, FrameUpdates, Users
+from tank_game.database import db, MatchFrame, MatchTanks, Match, TankFrame, FrameUpdates, Users
 from .communicator import Communicator
 from .game import Game
 
