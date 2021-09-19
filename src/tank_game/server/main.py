@@ -28,7 +28,11 @@ def serve_root():
 
 @app.route("/submit", methods=["GET"])
 def serve_submit_page():
-    return render("submit.html"), 200
+    if not user:
+        return redirect("/"), 303
+    else:
+        return render("submit.html"), 200
+
 
 
 @app.route("/submit", methods=["POST"])
