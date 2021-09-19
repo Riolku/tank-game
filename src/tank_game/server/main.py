@@ -35,14 +35,7 @@ def serve_submit_page():
 def accept_submission():
     if request.form.get("switch") == "on":
         file = request.files["file"]
-        path = f"/tmp/tank-game/{time.time()}"
-        try:
-            file.save(path)
-        except:
-            os.mkdir("/tmp/tank-game")
-            file.save(path)
-        with open(path, "r") as f:
-            code = f.read()
+        code = file.read()
     else:
         code = request.form["code"]
     print(code)
